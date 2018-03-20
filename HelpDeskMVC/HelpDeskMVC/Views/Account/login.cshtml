@@ -1,0 +1,65 @@
+﻿@model HelpDeskEntities.Account.Login
+@{
+    Layout = null;
+}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login/Registration Form Transition</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+    <link href="~/Content/Login.css" rel="stylesheet" />
+    <!--Jquery for validation-->
+    <script src="~/Scripts/jquery-1.12.4.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+</head>
+<body>    
+    <div class="cont">        
+        <div class="form sign-in">
+            <h2>Welcome back</h2>
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <label>
+                    <span>Email</span>
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @placeholder = "Registered Email", @autofocus = "autofocus" } })
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })                    
+                </label>
+                <label>
+                    <span>Password</span>
+                    @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @placeholder = "Your Password" } })
+                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                </label>
+                <button type="submit" class="submit">Sign In</button>
+            }         
+        </div>
+        <div class="sub-cont">
+            <div class="img">
+                <div class="img__text m--up">
+                    <h2>Forgot password?</h2>
+                    <p>Click on below button</p>
+                </div>
+                <div class="img__text m--in">
+                    <h2>Explore again !</h2>
+                    <p>You will receive a mail on your registered mailId</p>
+                </div>
+                <div class="img__btn">
+                    <span class="m--up">Go</span>
+                    <span class="m--in">Sign In</span>
+                </div>
+            </div>
+            <div class="form sign-up">
+                <h2>Only we need your registered emailId</h2>                                
+                <label>
+                    <span>Email</span>
+                    <input type="email" />
+                </label>                
+                <button type="button" class="submit">Submit</button>
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/Login.js"></script>
+</body>
+</html>

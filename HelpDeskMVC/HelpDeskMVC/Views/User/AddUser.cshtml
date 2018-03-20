@@ -1,0 +1,234 @@
+﻿@model HelpDeskMVC.Models.AddUserViewModel
+
+@{
+    ViewBag.Title = "AddUser";
+}
+@*<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>*@
+<link href="~/Content/AdminTheme/Multiselect/select2.min.css" rel="stylesheet" />
+<script src="~/Content/AdminTheme/Multiselect/select2.full.min.js"></script>
+
+<div class="text-center">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Add User</h3>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->                
+                    <div class="box-body">                                              
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control" id="Name" placeholder="Enter Name">
+                                        <span class="text-danger" id="validateName"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Email</label>
+                                        <input type="email" class="form-control" id="email" placeholder="Enter email">
+                                        <span class="text-danger" id="validateEmail"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Contact No.</label>
+                                        <input type="number" class="form-control" id="Contact" placeholder="Enter contact">
+                                        <span class="text-danger" id="validateContact"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Password</label>
+                                        <input type="password" class="form-control" id="Password" placeholder="Enter Password">
+                                        <span class="text-danger" id="validatePassword"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Confirm Password</label>
+                                        <input type="password" class="form-control" id="CPassword" placeholder="Verify Password">
+                                        <span class="text-danger" id="validateCPassword"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Choose User Group</label><br />
+                                        <p>
+                                            @foreach (var item in Model.UserGroupList)
+                                            {
+                                                <input type="radio" name="UserGroup" value="@item.GroupID"> @item.UsrGroup
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                      
+                        <div class="form-group optionDiv">
+                            <label>Assign Modules</label>
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-search"></i>
+                                </div>
+                                <select class="form-control select2 multiSelectDropDown" multiple="multiple" data-placeholder="Select Practices" style="width: 100%;"></select>
+                                <span class="text-danger" id="validateModules"></span> 
+                            </div>
+                        </div>
+                    </div>
+                            <!-- /.box-body -->
+                    <div class="box-footer">
+                        <a href="@Url.Action("Index","User")" class="pull-left btn btn-sm btn-info"><i class="fa fa-arrow-left"></i> Back to User List</a>
+                         <a href="#" onclick="SubmitUser()" class="btn btn-primary">Submit</a>
+                    </div>                
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        $(".select2").select2();
+        $(".optionDiv").hide();
+
+        $("input[name=UserGroup]").click(function () {
+            var UGroup = $('input[name=UserGroup]:checked').val();
+            if (UGroup == 1 || UGroup == 4) {
+                $(".optionDiv").hide('slow');
+            } else if (UGroup == 2 || UGroup == 3) {
+                $(".optionDiv").show('slow');
+            }
+        });
+        getAllModules();
+    });
+
+    function SubmitUser() {
+        var err = ValidateAllFields();
+        if (err.errorCount == 0) {
+          var selectedData = $('.multiSelectDropDown').val();
+          var UG=  $('input[name=UserGroup]:checked').val();
+            var User = {
+                Name: $("#Name").val(),
+                EmailID: $("#email").val(),
+                ContactNo: $("#Contact").val(),
+                Password: $("#Password").val(),
+                UserGroup: { UsrGroup: "", GroupID: UG }
+            };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddUser", "User")',
+                data: { modules: selectedData, usr: User },
+                async: true,
+                success: function (data) {
+                    makeAllFieldBlank();
+                    if (data.success) {
+                        swal({
+                            title: data.responseText,
+                            timer: 8000,
+                            type: 'success'
+                        }).catch(swal.noop);
+                    } else {
+                        swal({
+                            title: data.responseText,
+                            timer: 8000,
+                            type: 'error'
+                        }).catch(swal.noop);
+                    }
+                }
+            });
+        } else {
+            swal({
+                title: 'Unable to submit',
+                html: err.errors,
+                timer: 8000,
+                type: 'error'
+            }).catch(swal.noop);
+        }
+    }
+
+    function makeAllFieldBlank() {
+        $("#Name").val('');
+        $("#email").val('');
+        $("#Contact").val('');
+        $("#Password").val('');
+        $("#CPassword").val('');
+        $('.multiSelectDropDown').val('');
+    }
+
+    function ValidateAllFields() {
+        var err = 0;
+        var errOutput = "";
+        errOutput = "<ul>";
+        if ($("#Name").val().length == 0) {
+            err++;
+            errOutput = errOutput + '<li class="text-danger">Name is Missing</li><br />';
+        } if ($("#email").val().length == 0) {
+            err++;
+            errOutput = errOutput + '<li class="text-danger">Email is Missing</li><br />';
+        } if (!isEmail($("#email").val())) {
+            err++;
+            errOutput = errOutput + '<li class="text-danger">Email is Not Valid</li><br />';
+        } if (EmailExist($("#email").val())) {
+            err++;
+            errOutput = errOutput + '<li class="text-danger">Email already exist</li><br />';
+        } if ($("#Contact").val().length != 0 && $("#Contact").val().length != 10) {
+            err++;
+            errOutput = errOutput + '<li class="text-danger">Contact Number Must be of 10 Digits</li><br />';
+        } if ($("#Password").val().length == 0) {
+            err++;
+            errOutput = errOutput + '<li class="text-danger">Password is Missing</li><br />';
+        } if ($("#Password").val().length <= 7 && $("#Password").val().length != 0) {
+            err++;
+            errOutput = errOutput + '<li class="text-danger">Password Should be minimum 8 character</li><br />';
+        } if ($("#CPassword").val().length == 0 && $("#Password").val().length != 0) {
+            err++;
+            errOutput = errOutput + '<li class="text-danger">Enter Confirm Password</li><br />';
+        } if ($("#CPassword").val() != $("#Password").val()) {
+            err++;
+            errOutput = errOutput + '<li class="text-danger">Confirm Password is not matching with Password</li><br />';
+        } if (!$('input[name=UserGroup]:checked').val()) {
+            err++;
+            errOutput = errOutput + '<li class="text-danger">Please select one User Group</li><br />';
+        } if (($('input[name=UserGroup]:checked').val() == 2 || $('input[name=UserGroup]:checked').val() == 3) && $('.multiSelectDropDown').val().length == 0) {
+            err++;
+            errOutput = errOutput + '<li class="text-danger">Select any one Module</li><br />';
+        }
+        return { errorCount: err, errors: errOutput + " </ul>" };
+    }
+
+    function isEmail(email) {
+        var regex = /^([a-zA-Z0-9_.+-])+\@@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        return regex.test(email);
+    }
+
+    function EmailExist(email) {
+        var val = false;
+        $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("CheckExistingEmail", "Miscellaneous")',
+            data: { EmailID: email },
+            dataType: 'json',
+            async: false,
+            success: function (data) {                
+                val = data;
+            }
+        });
+        return val;
+    }
+
+    function getAllModules() {
+        $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("ModuleList", "Miscellaneous")',
+            dataType: 'json',
+            async: true,
+            success: function (data) {
+                $('.multiSelectDropDown').empty();
+                for (var i = 0; i < data.length; i++) {
+                    $('.multiSelectDropDown').append("<option value=" + data[i].ModuleID + ">" + data[i].Module + "</option>");
+                }
+            }
+        });
+    }
+</script>

@@ -1,0 +1,76 @@
+﻿@model IEnumerable<HelpDeskEntities.Account.User>
+
+@{
+    ViewBag.Title = "User List";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title"><a href="@Url.Action("AddUser","User")" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Add New</a></h3>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+            <div class="box-body">              
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                EmailID
+                            </th>
+                            <th>
+                                Contact No
+                            </th>
+                            <th>
+                                User Group
+                            </th>
+                            <th>
+                                Last Login
+                            </th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Name
+                                </td>
+                                <td>
+                                    @item.EmailID
+                                </td>
+                                <td>
+                                    @item.ContactNo
+                                </td>
+                                <td>
+                                    @item.UserGroup.UsrGroup
+                                </td>
+                                <td>
+                                    @item.last_Login
+                                </td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-info"><i class="fa fa-pencil"></i> Edit</a>
+                                    <a href="#" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i> Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>                
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
