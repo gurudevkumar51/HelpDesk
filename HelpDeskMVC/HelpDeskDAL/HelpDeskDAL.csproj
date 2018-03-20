@@ -71,8 +71,10 @@
   <ItemGroup>
     <Compile Include="DataAccess\AccountRepository.cs" />
     <Compile Include="DataAccess\BaseRepository.cs" />
+    <Compile Include="DataAccess\ModulesRepository.cs" />
     <Compile Include="DataAccess\TicketRepository.cs" />
     <Compile Include="DataAccess\UserRepository.cs" />
+    <Compile Include="DataMapper\ModuleMapper.cs" />
     <Compile Include="DataMapper\UserMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

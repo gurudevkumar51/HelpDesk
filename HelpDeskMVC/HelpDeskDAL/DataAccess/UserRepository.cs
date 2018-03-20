@@ -1,5 +1,6 @@
 ﻿using HelpDeskDAL.DataMapper;
 using HelpDeskEntities.Account;
+using HelpDeskEntities.Modules;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,7 +24,7 @@ namespace HelpDeskDAL.DataAccess
                  new SqlParameter("@Email", email)
 
             };
-                IDataReader reader = base.GetReader("Usp_Manage_User", parameters);
+                IDataReader reader = base.GetReader("SP_Manage_User", parameters);
                 using (reader)
                 {
                     return objUsrMapper.Map(reader);
@@ -49,11 +50,33 @@ namespace HelpDeskDAL.DataAccess
                          new SqlParameter("@UserGroupID", usr.UserGroup.GroupID)
                         };
                 flag = ExecuteNonQuery("SP_Manage_User", parameters);
+                msg = flag > 0 ? "Successfully Added new User" : "Try Again Later";
             }
             catch (Exception ex)
             {
                 msg = "Unable to add " + ex.Message;
                 return flag;
+            }
+            return flag;
+        }
+
+        public int UpdateUserModule(int mdlsID,int UserID,out string msg)
+        {
+            var flag = 0; msg = "";
+            try
+            {
+                SqlParameter[] parameters = {
+                    new SqlParameter("@ModuleID",mdlsID),
+                    new SqlParameter("@UserID",UserID),
+                    new SqlParameter("@Type","C")
+                };
+                flag = ExecuteNonQuery("SP_Manage_Modules", parameters);
+                msg = flag > 0 ? "Successfully Mapped user with Modules" : "Try Again Later";
+            }
+            catch (Exception ex)
+            {
+                msg = "Unable to Map due to: " + ex.Message;
+                return 0;
             }
             return flag;
         }
