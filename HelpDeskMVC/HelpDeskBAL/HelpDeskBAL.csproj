@@ -40,7 +40,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account\AccountBusiness.cs" />
+    <Compile Include="Module\ModuleBAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Ticket\TicketBusiness.cs" />
+    <Compile Include="User\UserBusiness.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HelpDeskCommon\HelpDeskCommon.csproj">
+      <Project>{F33C0CE4-4713-4943-B0F8-3BCB1A746A21}</Project>
+      <Name>HelpDeskCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HelpDeskDAL\HelpDeskDAL.csproj">
+      <Project>{F8E6FB41-CC18-43F1-9FCF-AA0B15A15428}</Project>
+      <Name>HelpDeskDAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HelpDeskEntities\HelpDeskEntities.csproj">
+      <Project>{58439254-c9a7-4e24-ad03-e464ff67c9dd}</Project>
+      <Name>HelpDeskEntities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
