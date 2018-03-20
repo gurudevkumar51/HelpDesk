@@ -16,7 +16,7 @@
     <RootNamespace>HelpDeskMVC</RootNamespace>
     <AssemblyName>HelpDeskMVC</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -89,21 +89,216 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\AdminTheme\AdminLTE.css" />
+    <Content Include="Content\AdminTheme\adminlte.js" />
+    <Content Include="Content\AdminTheme\AdminLTE.min.css" />
+    <Content Include="Content\AdminTheme\adminlte.min.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\ar.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\az.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\bg.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\ca.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\cs.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\da.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\de.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\el.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\en.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\es.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\et.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\eu.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\fa.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\fi.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\fr.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\gl.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\he.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\hi.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\hr.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\hu.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\id.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\is.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\it.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\ja.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\km.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\ko.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\lt.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\lv.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\mk.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\ms.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\nb.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\nl.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\pl.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\pt-BR.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\pt.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\ro.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\ru.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\sk.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\sr-Cyrl.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\sr.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\sv.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\th.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\tr.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\uk.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\vi.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\zh-CN.js" />
+    <Content Include="Content\AdminTheme\Multiselect\i18n\zh-TW.js" />
+    <Content Include="Content\AdminTheme\Multiselect\select2.css" />
+    <Content Include="Content\AdminTheme\Multiselect\select2.full.js" />
+    <Content Include="Content\AdminTheme\Multiselect\select2.full.min.js" />
+    <Content Include="Content\AdminTheme\Multiselect\select2.js" />
+    <Content Include="Content\AdminTheme\Multiselect\select2.min.css" />
+    <Content Include="Content\AdminTheme\Multiselect\select2.min.js" />
+    <Content Include="Content\AdminTheme\skins\skin-black-light.css" />
+    <Content Include="Content\AdminTheme\skins\skin-black-light.min.css" />
+    <Content Include="Content\AdminTheme\skins\skin-black.css" />
+    <Content Include="Content\AdminTheme\skins\skin-black.min.css" />
+    <Content Include="Content\AdminTheme\skins\skin-blue-light.css" />
+    <Content Include="Content\AdminTheme\skins\skin-blue-light.min.css" />
+    <Content Include="Content\AdminTheme\skins\skin-blue.css" />
+    <Content Include="Content\AdminTheme\skins\skin-blue.min.css" />
+    <Content Include="Content\AdminTheme\skins\skin-green-light.css" />
+    <Content Include="Content\AdminTheme\skins\skin-green-light.min.css" />
+    <Content Include="Content\AdminTheme\skins\skin-green.css" />
+    <Content Include="Content\AdminTheme\skins\skin-green.min.css" />
+    <Content Include="Content\AdminTheme\skins\skin-purple-light.css" />
+    <Content Include="Content\AdminTheme\skins\skin-purple-light.min.css" />
+    <Content Include="Content\AdminTheme\skins\skin-purple.css" />
+    <Content Include="Content\AdminTheme\skins\skin-purple.min.css" />
+    <Content Include="Content\AdminTheme\skins\skin-red-light.css" />
+    <Content Include="Content\AdminTheme\skins\skin-red-light.min.css" />
+    <Content Include="Content\AdminTheme\skins\skin-red.css" />
+    <Content Include="Content\AdminTheme\skins\skin-red.min.css" />
+    <Content Include="Content\AdminTheme\skins\skin-yellow-light.css" />
+    <Content Include="Content\AdminTheme\skins\skin-yellow-light.min.css" />
+    <Content Include="Content\AdminTheme\skins\skin-yellow.css" />
+    <Content Include="Content\AdminTheme\skins\skin-yellow.min.css" />
+    <Content Include="Content\AdminTheme\skins\_all-skins.css" />
+    <Content Include="Content\AdminTheme\skins\_all-skins.min.css" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\font-awesome.css" />
+    <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\fonts\ionicons.svg" />
+    <Content Include="Content\Ionicons\ionicons.css" />
+    <Content Include="Content\Ionicons\ionicons.min.css" />
+    <Content Include="Content\Login.css" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Content\SweetAlert\sweetalert2.min.css" />
+    <Content Include="Content\SweetAlert\sweetalert2.min.js" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Web.config" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\bootstrap-theme.min.css.map" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Images\LoginBack.jpg" />
+    <Content Include="Images\user2-150x150.png" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Content\Login.scss" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\fonts\ionicons.eot" />
+    <Content Include="Content\fonts\ionicons.ttf" />
+    <Content Include="Content\fonts\ionicons.woff" />
+    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <None Include="Scripts\jquery-1.12.4.intellisense.js" />
+    <Content Include="Scripts\jquery-1.12.4.js" />
+    <Content Include="Scripts\jquery-1.12.4.min.js" />
+    <Content Include="Scripts\jquery-1.12.4.min.map" />
+    <None Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\jquery-3.3.1.js" />
+    <Content Include="Scripts\jquery-3.3.1.min.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\Login.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MiscellaneousController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AddUserViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
+    <Content Include="Views\Account\login.cshtml" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
+    <Content Include="Scripts\jquery-3.3.1.min.map" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\AdminHome.cshtml" />
+    <Content Include="Views\User\AddUser.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -113,9 +308,21 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
-    <Folder Include="Views\Account\" />
     <Folder Include="Views\Miscellaneous\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HelpDeskBAL\HelpDeskBAL.csproj">
+      <Project>{EF07B302-4FD5-42A9-9239-111D2E96D794}</Project>
+      <Name>HelpDeskBAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HelpDeskCommon\HelpDeskCommon.csproj">
+      <Project>{F33C0CE4-4713-4943-B0F8-3BCB1A746A21}</Project>
+      <Name>HelpDeskCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HelpDeskEntities\HelpDeskEntities.csproj">
+      <Project>{58439254-C9A7-4E24-AD03-E464FF67C9DD}</Project>
+      <Name>HelpDeskEntities</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -132,7 +339,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>51524</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:51524/</IISUrl>
+          <IISUrl>http://localhost/HelpDeskMVC</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

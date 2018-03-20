@@ -15,6 +15,23 @@ namespace HelpDeskMVC
             RouteConfig.RegisterRoutes(RouteTable.Routes);
         }
 
+        protected void Application_BeginRequest()
+        {
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.Cache.SetExpires(DateTime.UtcNow.AddHours(-1));
+            Response.Cache.SetNoStore();
+        }
+
+        protected void Application_EndRequest()
+        {
+            if (Context.Response.StatusCode == 302 &&
+                Context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                Context.Response.Clear();
+                Context.Response.StatusCode = 401;
+            }
+        }
+
         protected void Application_AuthenticateRequest(Object sender, EventArgs e)
         {
             if (HttpContext.Current.User != null)
