@@ -15,7 +15,7 @@ namespace HelpDeskEntities.Account
         [Required(ErrorMessage = "Enter the Password")]
         public string Password { get; set; }
 
-        [Display(Name = "Remember me")]
-        public Boolean Rememberme { get; set; }
+        //[Display(Name = "Remember me")]
+        //public Boolean Rememberme { get; set; }
     }
 }
