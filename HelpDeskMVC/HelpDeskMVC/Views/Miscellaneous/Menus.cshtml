@@ -1,0 +1,73 @@
+﻿@{ 
+    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : "EndUser"));
+    var ActiveController = TempData["ActiveController"].ToString();
+    var ActiveAction = TempData["ActiveAction"].ToString();
+}
+
+<ul class="sidebar-menu" data-widget="tree">
+    <li class="header">Menus</li>   
+    <li class="@((ActiveController == "Home") && (ActiveAction=="Index") ? "active" : "")"><a href="@Url.Action("Index", "Home")"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
+    
+    @if (role == "SupeUser" || role == "EndUser")
+    {
+        <li class="@((ActiveController == "Ticket") && (ActiveAction!="Index" || ActiveAction!="ClosedTickets") ? "treeview active" : "treeview")">
+            <a href="#">
+                <i class="fa fa-ticket"></i> <span>My Tickets</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li class="@((ActiveAction=="AddTicket")&&(ActiveController == "Ticket")?"active":"")">
+                    <a href="@Url.Action("AddTicket", "Ticket")"><i class="fa fa-plus-square"></i> Add New Ticket</a>
+                </li>
+                <li class="@((ActiveAction=="MyActiveTicket")&&(ActiveController == "Ticket")?"active":"")">
+                    <a href="@Url.Action("MyActiveTicket", "Ticket")"><i class="fa fa-spinner"></i> My Active Tickets</a>
+                </li>
+                <li class="@((ActiveAction=="MyClosedTicket")&&(ActiveController == "Ticket")?"active":"")">
+                    <a href="@Url.Action("MyClosedTicket", "Ticket")"><i class="fa fa-window-close"></i> My Closed Tickets</a>
+                </li>
+            </ul>
+        </li>
+    }
+
+    @if (role != "EndUser")
+    {
+        <li class="@((ActiveController == "Ticket") && (ActiveAction=="Index" || ActiveAction=="ClosedTickets") ? "treeview active" : "treeview")">
+            <a href="#">
+                <i class="fa fa-ticket"></i> <span>Manage Tickets</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li class="@((ActiveAction=="Index")&&(ActiveController == "Ticket")?"active":"")">
+                    <a href="@Url.Action("Index", "Ticket")"><i class="fa fa-spinner"></i> Active Tickets</a>
+                </li>
+                <li class="@((ActiveAction=="ClosedTickets")&&(ActiveController == "Ticket")?"active":"")">
+                    <a href="@Url.Action("ClosedTickets", "Ticket")"><i class="fa fa-window-close"></i> Closed Tickets</a>
+                </li>
+            </ul>
+        </li>
+    }
+       
+    @if (role == "admin")
+    {
+    <li class="@(ActiveController == "User" ? "treeview active" : "treeview")">
+        <a href="#">
+            <i class="fa fa-users"></i> <span> Manage User</span>
+            <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+            </span>
+        </a>
+        <ul class="treeview-menu">
+            <li class="@((ActiveAction=="Index")&&(ActiveController == "User")?"active":"")">
+                <a href="@Url.Action("Index", "User")"><i class="fa fa-users"></i> User list</a>
+            </li>
+            <li class="@((ActiveAction=="AddUser")&&(ActiveController == "User")?"active":"")">
+                <a href="@Url.Action("AddUser", "User")"><i class="fa fa-user-plus"></i> Add User</a>
+            </li>
+        </ul>                            
+    </li>
+    }
+</ul>

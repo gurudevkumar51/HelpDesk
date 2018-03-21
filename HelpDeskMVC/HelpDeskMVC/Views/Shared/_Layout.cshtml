@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using HelpDeskCommon.CommonClasses
+@{ 
+    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : "EndUser"));
+    var CurrentUserName = @GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name)[1];
+    var CurrentUserEmail = @GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name)[0];
+    TempData["ActiveAction"] = ViewContext.RouteData.Values["Action"].ToString();
+    TempData["ActiveController"] = ViewContext.RouteData.Values["Controller"].ToString();
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -28,14 +36,20 @@
     <!-- REQUIRED JS SCRIPTS -->
     <!-- jQuery 3 -->
     <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    @*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
     <!-- Bootstrap 3.3.7 -->
     <script src="~/Scripts/bootstrap.min.js"></script>
     <!-- AdminLTE App -->
     <script src="~/Content/AdminTheme/adminlte.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
 
     <!--Validation-->
     @*<script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+
+    <!-- FancyBox 3.2.5-->
+    <link href="~/Content/fancybox/jquery.fancybox.min.css" rel="stylesheet" />
+    <script src="~/Content/fancybox/jquery.fancybox.min.js"></script>
 
     <!-- SweetAlert -->
     <link href="~/Content/SweetAlert/sweetalert2.min.css" rel="stylesheet" />
@@ -93,14 +107,14 @@
                                 <!-- The user image in the navbar-->
                                 <img src="~/Images/user2-150x150.png" class="user-image" alt="User Image"/>
                                 <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                                <span class="hidden-xs">Alexander Pierce</span>
+                                <span class="hidden-xs">@CurrentUserEmail</span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- The user image in the menu -->
                                 <li class="user-header">
                                     <img src="~/Images/user2-150x150.png" class="img-circle" alt="User Image"/>
                                     <p>
-                                        Alexander Pierce - Web Developer
+                                        @CurrentUserName - @role
                                         <small>Member since Nov. 2012</small>
                                     </p>
                                 </li>
@@ -115,7 +129,13 @@
                                     </div>
                                 </li>
                             </ul>
-                        </li>                        
+                        </li>
+                        <li>
+                            <a data-fancybox data-type="ajax" data-src="@Url.Action("ChangePassword", "Account")" href="javascript:;">
+                                <i class="fa fa-gears"></i>
+                            </a>
+                            @*<a href="#" onclick="ChangePassword()"><i class="fa fa-gears"></i></a>*@
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -130,13 +150,13 @@
                         <img src="~/Images/user2-150x150.png" class="img-circle" alt="User Image"/>
                     </div>
                     <div class="pull-left info">
-                        <p>Alexander Pierce</p>
+                        <p>@CurrentUserName</p>
                         <!-- Status -->
                         <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                     </div>
                 </div>
                 <!-- search form (Optional) -->
-                <form action="#" method="get" class="sidebar-form">
+                @*<form action="#" method="get" class="sidebar-form">
                     <div class="input-group">
                         <input type="text" name="q" class="form-control" placeholder="Search...">
                         <span class="input-group-btn">
@@ -145,12 +165,13 @@
                             </button>
                         </span>
                     </div>
-                </form>
+                </form>*@
                 <!-- /.search form -->
                 <!-- Sidebar Menu -->
-                <ul class="sidebar-menu" data-widget="tree">
+                @Html.Action("Menus", "Miscellaneous")
+                @*<ul class="sidebar-menu" data-widget="tree">
                     <li class="header">HEADER</li>
-                    <!-- Optionally, you can add icons to the links -->
+                     Optionally, you can add icons to the links 
                     <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
                     <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
                     <li class="treeview">
@@ -165,7 +186,7 @@
                             <li><a href="@Url.Action("AddUser","User")"><i class="fa fa-user-plus"></i> Add User</a></li>
                         </ul>
                     </li>
-                </ul>
+                </ul>*@
                 <!-- /.sidebar-menu -->
             </section>
             <!-- /.sidebar -->
@@ -202,6 +223,44 @@
         </footer>
         <div class="control-sidebar-bg"></div>
     </div>
-    <!-- ./wrapper -->        
+
+    <!-- ./wrapper -->   
+    <script>
+        function ChangePassword() {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("ChangePassword", "Account")',
+                async: true,
+                //beforeSend: function () {
+                //    ShowLoadingGif();
+                //},
+                success: function (data) {
+                    $.fancybox.open({
+                        content: data,
+                        autoSize: false,
+                        'scrolling': 'no',
+                        width: "25%",
+                        height: "55%",
+                        //afterClose: function () { 
+                        //    parent.location.reload(true);
+                        //}
+                    })
+                }
+            });
+        }
+
+        //Show loading GIF
+        function ShowLoadingGif() {
+            $.fancybox.showLoading();
+            $.fancybox.helpers.overlay.open({ parent: $('body'), closeClick: false });
+        }
+
+        //Hide loading GIF
+        function HideLoadingGif() {
+            $.fancybox.hideLoading();
+            $.fancybox.helpers.overlay.close();
+        }
+    </script>     
 </body>
 </html>
+

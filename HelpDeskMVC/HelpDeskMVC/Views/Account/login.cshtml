@@ -11,9 +11,15 @@
     <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Open+Sans'>
     <link href="~/Content/Login.css" rel="stylesheet" />
     <!--Jquery for validation-->
-    <script src="~/Scripts/jquery-1.12.4.min.js"></script>
+    @*<script src="~/Scripts/jquery-1.12.4.min.js"></script>*@
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    <!-- SweetAlert -->
+    <link href="~/Content/SweetAlert/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Content/SweetAlert/sweetalert2.min.js"></script>   
+
 </head>
 <body>    
     <div class="cont">        
@@ -54,12 +60,86 @@
                 <h2>Only we need your registered emailId</h2>                                
                 <label>
                     <span>Email</span>
-                    <input type="email" />
+                    <input type="email" placeholder="Registered Email" id="forgetPwd" />
                 </label>                
-                <button type="button" class="submit">Submit</button>
+                <button type="button" onclick="forgetPass()" class="submit">Submit</button>
             </div>
         </div>
     </div>
+
     <script src="~/Scripts/Login.js"></script>
+    <script>
+        function forgetPass() {
+            $(".submit").attr("disabled", true);
+            email = $("#forgetPwd").val();
+            var err = ValidateEmail(email);
+            if (err.errorCount == 0) {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("ForgetPassword", "Account")',
+                    data: { eml: email },
+                    async: true,
+                    success: function (data) {
+                        $("#forgetPwd").val('');
+                        $(".submit").removeAttr("disabled");
+                        if (data.status) {
+                            swal({
+                                title: "We have sent a mail to reset your password",
+                                timer: 4000,
+                                type: 'success'
+                            }).catch(swal.noop);
+                        }
+                    }
+                });
+            } else {
+                $("#forgetPwd").val('');
+                $(".submit").removeAttr("disabled");
+                swal({
+                    title: 'Unable to Update Password',
+                    html: err.errors,
+                    timer: 8000,
+                    type: 'error'
+                }).catch(swal.noop);
+            }
+        }
+
+        function ValidateEmail(eml) {
+            var err = 0;
+            var errOutput = "";
+            errOutput = "<ul>";
+            if (eml.length == 0) {
+                err++;
+                errOutput = errOutput + '<li class="text-danger">Enter your Registered Email</li><br />';
+            } if (!isEmail(eml) && eml.length >= 1) {
+                err++;
+                errOutput = errOutput + '<li class="text-danger">Email is Not Valid</li><br />';
+            } if (!EmailExist(eml) && eml.length >= 1 && isEmail(eml)) {
+                err++;
+                errOutput = errOutput + '<li class="text-danger">This Email is Not Registered with us</li><br />';
+            }
+            return { errorCount: err, errors: errOutput + " </ul>" };
+        }
+
+        function EmailExist(email) {            
+            var val = false;
+            $.ajax({
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("CheckExistingEmail", "Miscellaneous")',
+                data: { EmailID: email },
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    val = data;
+                }
+            });
+            return val;
+        }
+
+        function isEmail(email) {
+            var regex = /^([a-zA-Z0-9_.+-])+\@@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            return regex.test(email);
+        }
+    </script>
 </body>
 </html>
