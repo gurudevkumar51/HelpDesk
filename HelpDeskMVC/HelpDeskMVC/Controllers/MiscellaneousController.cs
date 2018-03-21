@@ -12,7 +12,8 @@ namespace HelpDeskMVC.Controllers
     {
         private ModuleBAL mdlb = new ModuleBAL();
         private UserBusiness usr = new UserBusiness();
-        [Authorize]
+        
+        [AllowAnonymous]
         public ActionResult CheckExistingEmail(string EmailID)
         {
             var pp = usr.GetUserList(EmailID);
@@ -26,6 +27,12 @@ namespace HelpDeskMVC.Controllers
             var Modules = new List<HelpDeskEntities.Modules.Modules>();
             Modules = mdlb.AllModuleList();
             return Json(Modules, JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize][ChildActionOnly]
+        public ActionResult Menus()
+        {
+            return PartialView();
         }
     }
 }

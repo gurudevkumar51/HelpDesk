@@ -21,7 +21,7 @@ namespace HelpDeskMVC.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public ActionResult AddUser()
         {
             AddUserViewModel m = new AddUserViewModel();
@@ -29,7 +29,7 @@ namespace HelpDeskMVC.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public ActionResult AddUser(List<int> modules, User usr)
         {
             string msg = "";

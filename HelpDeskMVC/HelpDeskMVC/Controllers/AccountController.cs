@@ -70,5 +70,22 @@ namespace HelpDeskMVC.Controllers
             FormsAuthentication.SignOut();
             return RedirectToAction("login", "Account");
         }
+
+        [HttpGet]
+        public ActionResult ChangePassword()
+        {
+            return PartialView();
+        }
+        
+        public ActionResult ChangePassword(ChangePassword Cp)
+        {
+            return Json(new { status = true }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult ForgetPassword(string eml)
+        {
+            return Json(new { status = true }, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }
