@@ -15,10 +15,17 @@ namespace HelpDeskBAL.Ticket
     {
         private TicketRepository tktRepo = new TicketRepository();
         private LogsRepository LogRepo = new LogsRepository();
+        
 
         public List<HelpDeskEntities.Ticket.Ticket> AllTicket()
         {
             return tktRepo.AllTicket(null);
+        }
+        public HelpDeskEntities.Ticket.Ticket TicketByID(int tktID)
+        {
+            var tkt= tktRepo.TicketByID(tktID).FirstOrDefault();
+            //tkt.Comments = cmntRepo.CommentList(tktID);
+            return tkt;
         }
 
         public List<HelpDeskEntities.Ticket.Ticket> AllActiceTickets()

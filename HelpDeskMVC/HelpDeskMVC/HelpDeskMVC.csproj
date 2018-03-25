@@ -294,6 +294,7 @@
     <Compile Include="Models\AddTicketViewModel.cs" />
     <Compile Include="Models\AddUserViewModel.cs" />
     <Compile Include="Models\TicketAssign.cs" />
+    <Compile Include="Models\TicketComment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -312,6 +313,7 @@
     <Content Include="Views\Ticket\AddTicket.cshtml" />
     <Content Include="Views\Ticket\Index.cshtml" />
     <Content Include="Views\Ticket\TicketAssign.cshtml" />
+    <Content Include="Views\Ticket\TicketDetails.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -86,5 +86,33 @@ namespace HelpDeskMVC.Controllers
             var flag = Tkt.CloseTicket(AssignBy, tktID);
             return Json(new { status = flag }, JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult TicketDetails(int tktID)
+        {
+            return View(Tkt.TicketByID(tktID));
+        }
+
+        [HttpGet]
+        public ActionResult TicketComments(int tktID)
+        {
+            CommentBAL cmntBAL = new CommentBAL();
+            var cmnts = cmntBAL.TicketComments(tktID);
+            return Json(cmnts, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult TicketComment(HelpDeskMVC.Models.TicketComment tc)
+        {
+            CommentBAL cmntBAL = new CommentBAL();
+            HelpDeskEntities.Ticket.TicketComment cmnt = new HelpDeskEntities.Ticket.TicketComment();
+            cmnt.Comment = tc.Comment;
+            cmnt.TicketID = tc.TicketID;
+            cmnt.CommentBy.UID= Convert.ToInt32(GenericClass.CsvToStringArray(User.Identity.Name)[2]);
+
+            string msg = "";
+
+           var flag= cmntBAL.PostComment(cmnt, out msg);
+            return Json(new { status = flag, Response = msg }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

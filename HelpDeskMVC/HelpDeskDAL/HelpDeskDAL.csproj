@@ -74,7 +74,9 @@
     <Compile Include="DataAccess\LogsRepository.cs" />
     <Compile Include="DataAccess\ModulesRepository.cs" />
     <Compile Include="DataAccess\TicketRepository.cs" />
+    <Compile Include="DataAccess\TktCommentRepository.cs" />
     <Compile Include="DataAccess\UserRepository.cs" />
+    <Compile Include="DataMapper\CommentMapper.cs" />
     <Compile Include="DataMapper\ModuleMapper.cs" />
     <Compile Include="DataMapper\TicketMapper.cs" />
     <Compile Include="DataMapper\UserMapper.cs" />

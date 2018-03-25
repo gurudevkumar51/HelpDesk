@@ -64,7 +64,30 @@ namespace HelpDeskDAL.DataAccess
                 return null;
             }
         }
-        
+
+        public List<Ticket> TicketByID(int tktID)
+        {            
+            try
+            {
+                TicketMapper objModuleMapper = new TicketMapper();
+                SqlParameter[] parameters =
+                    {
+                    new SqlParameter("@Type","F"),
+                    new SqlParameter("@TktID",tktID)
+                };
+
+                IDataReader reader = base.GetReader("SP_Manage_Ticket", parameters);
+                using (reader)
+                {
+                    return objModuleMapper.Map(reader);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         //Updating ticket status like Open, InProgress or Closed
         public int UpdateTicketStatus(int TktID, int StatusID)
         {

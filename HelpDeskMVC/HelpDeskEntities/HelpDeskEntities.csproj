@@ -80,6 +80,7 @@
     <Compile Include="Modules\Modules.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ticket\Ticket.cs" />
+    <Compile Include="Ticket\TicketComment.cs" />
     <Compile Include="Ticket\TicketFile.cs" />
     <Compile Include="Ticket\TicketNature.cs" />
     <Compile Include="Ticket\TicketStatus.cs" />
