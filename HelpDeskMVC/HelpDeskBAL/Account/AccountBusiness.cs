@@ -1,4 +1,5 @@
-﻿using HelpDeskCommon.CommonClasses;
+﻿using HelpDeskBAL.User;
+using HelpDeskCommon.CommonClasses;
 using HelpDeskDAL.DataAccess;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace HelpDeskBAL.Account
     public class AccountBusiness
     {
         private AccountRepository accRepo = new AccountRepository();
-        private UserRepository usrRepo = new UserRepository();
+        private UserBusiness usrRepo = new UserBusiness();
         public HelpDeskEntities.Account.User login(HelpDeskEntities.Account.Login lgn, out string msg)
         {
             msg = "";

@@ -20,6 +20,11 @@ namespace HelpDeskMVC.Controllers
             return View(usrlist);
         }
 
+        public ActionResult AllHelpDeskAndSuperUser(int moduleID)
+        {
+            return Json(usrBAL.HelpDeskUserModuleWise(moduleID), JsonRequestBehavior.AllowGet);
+        }
+
         [HttpGet]
         [Authorize(Roles = "admin")]
         public ActionResult AddUser()

@@ -22,8 +22,29 @@ namespace HelpDeskDAL.DataAccess
                 SqlParameter[] parameters = {
                  new SqlParameter("@Type", type),
                  new SqlParameter("@Email", email)
-
-            };
+                };
+                IDataReader reader = base.GetReader("SP_Manage_User", parameters);
+                using (reader)
+                {
+                    return objUsrMapper.Map(reader);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        
+        public List<User> HelpDeskUserModuleWise(int mdlID)
+        {
+            var type = "F";
+            try
+            {
+                UserMapper objUsrMapper = new UserMapper();
+                SqlParameter[] parameters = {
+                 new SqlParameter("@Type", type),
+                 new SqlParameter("@ModuleID", mdlID)
+                };
                 IDataReader reader = base.GetReader("SP_Manage_User", parameters);
                 using (reader)
                 {
@@ -38,7 +59,7 @@ namespace HelpDeskDAL.DataAccess
 
         public int AddNewUser(User usr, out string msg)
         {
-            var flag = 0; msg = "";
+            var InsertedID = 0; msg = "";
             try
             {
                 SqlParameter[] parameters = {
@@ -47,17 +68,20 @@ namespace HelpDeskDAL.DataAccess
                          new SqlParameter("@PhoneNumber", usr.ContactNo),
                          new SqlParameter("@Name", usr.Name),
                          new SqlParameter("@Password", usr.Password),
-                         new SqlParameter("@UserGroupID", usr.UserGroup.GroupID)
-                        };
-                flag = ExecuteNonQuery("SP_Manage_User", parameters);
-                msg = flag > 0 ? "Successfully Added new User" : "Try Again Later";
+                         new SqlParameter("@UserGroupID", usr.UserGroup.GroupID),
+                         new SqlParameter("@id",0)
+                };
+                parameters[6].Direction = ParameterDirection.Output;
+
+                InsertedID = ExecuteNonQueryWithReturnValue("SP_Manage_User", "@id", parameters);
+                msg = InsertedID > 0 ? "Successfully Added new User" : "Try Again Later";
             }
             catch (Exception ex)
             {
                 msg = "Unable to add " + ex.Message;
-                return flag;
+                return InsertedID;
             }
-            return flag;
+            return InsertedID;
         }
 
         public int UpdateUserModule(int mdlsID,int UserID,out string msg)

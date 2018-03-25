@@ -1,13 +1,5 @@
-﻿using HelpDeskCommon.CommonClasses;
-using HelpDeskDAL.DataMapper;
-using HelpDeskEntities.Account;
-using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HelpDeskDAL.DataAccess
 {

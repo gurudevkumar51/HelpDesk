@@ -6,7 +6,7 @@
 
 <ul class="sidebar-menu" data-widget="tree">
     <li class="header">Menus</li>   
-    <li class="@((ActiveController == "Home") && (ActiveAction=="Index") ? "active" : "")"><a href="@Url.Action("Index", "Home")"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
+    @*<li class="@((ActiveController == "Home") && (ActiveAction=="Index") ? "active" : "")"><a href="@Url.Action("Index", "Home")"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>*@
     
     @if (role == "SupeUser" || role == "EndUser")
     {

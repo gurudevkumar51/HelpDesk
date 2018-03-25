@@ -15,8 +15,8 @@ namespace HelpDeskEntities
 
    public enum Ticket_Nature
     {
-        query = 1,
-        error,
+        Query = 1,
+        Error,
         Suggestion
     }
 

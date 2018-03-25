@@ -16,14 +16,19 @@ namespace HelpDeskBAL.User
         {
             return usrRepo.GetUserList(email);
         }
+        // returns All HelpDesk User & Super User on the basis of moduleID
+        public List<HelpDeskEntities.Account.User> HelpDeskUserModuleWise(int mdl)
+        {
+            return usrRepo.HelpDeskUserModuleWise(mdl);
+        }
 
         public int AddNewUser(HelpDeskEntities.Account.User usr, List<int> mdls, out string msg)
         {
             usr.Password = GenericClass.Hash(usr.Password);
-            var flag = usrRepo.AddNewUser(usr, out msg);
+            var InsertedId = usrRepo.AddNewUser(usr, out msg);
             if (mdls != null)
             {
-                if (flag > 0 && mdls.Count > 0)
+                if (InsertedId > 0 && mdls.Count > 0)
                 {
                     var currentUser = GetUserList(usr.EmailID).FirstOrDefault();
                     foreach (var m in mdls)
@@ -32,7 +37,7 @@ namespace HelpDeskBAL.User
                     }
                 }
             }
-            return flag;
+            return InsertedId;
         }
 
         public int UpdateUserProfile(HelpDeskEntities.Account.User usr, out string msg)

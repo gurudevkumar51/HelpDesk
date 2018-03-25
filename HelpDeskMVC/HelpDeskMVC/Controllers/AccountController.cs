@@ -38,14 +38,14 @@ namespace HelpDeskMVC.Controllers
             {
                 var authTicket = new FormsAuthenticationTicket(
                     1,
-                    user.EmailID + "," + user.Name,
+                    user.EmailID + "," + user.Name + "," + user.UID,
                     DateTime.Now,
                     DateTime.Now.AddMinutes(20),
                     false,
                     user.UserGroup.UsrGroup);
                 string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
                 var authCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
-                HttpContext.Response.Cookies.Add(authCookie);                
+                HttpContext.Response.Cookies.Add(authCookie);
 
                 if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
                     && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))

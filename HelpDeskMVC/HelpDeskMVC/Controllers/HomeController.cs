@@ -11,7 +11,9 @@ namespace HelpDeskMVC.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            return View("AdminHome");
+            return View();
         }
+
+
     }
 }

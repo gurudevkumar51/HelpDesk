@@ -51,7 +51,18 @@
     <link href="~/Content/fancybox/jquery.fancybox.min.css" rel="stylesheet" />
     <script src="~/Content/fancybox/jquery.fancybox.min.js"></script>
 
-    <!-- SweetAlert -->
+    <!--Jquery- DataTables 1.10.16-->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.1/css/responsive.dataTables.min.css" />
+
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
+
+
+    @*<link href="~/Content/DataTables/jquery.dataTables.min.css" rel="stylesheet" />
+    <script src="~/Content/DataTables/jquery.dataTables.min.js"></script>*@
+
+    <!-- SweetAlert2 -->
     <link href="~/Content/SweetAlert/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Content/SweetAlert/sweetalert2.min.js"></script>
 
@@ -122,10 +133,10 @@
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
                                     <div class="pull-left">
-                                        <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                        <a href="#" class="btn btn-info"><i class="fa fa-user"></i> Profile</a>
                                     </div>
                                     <div class="pull-right">
-                                        <a href="@Url.Action("Logout","Account")" class="btn btn-default btn-flat">Sign out</a>
+                                        <a href="@Url.Action("Logout","Account")" class="btn btn-info"><i class="fa fa-sign-out"></i> Sign out</a>
                                     </div>
                                 </li>
                             </ul>
@@ -226,7 +237,7 @@
 
     <!-- ./wrapper -->   
     <script>
-        function ChangePassword() {
+        @*function ChangePassword() {
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("ChangePassword", "Account")',
@@ -247,7 +258,7 @@
                     })
                 }
             });
-        }
+        }*@
 
         //Show loading GIF
         function ShowLoadingGif() {

@@ -1,0 +1,134 @@
+﻿@model HelpDeskMVC.Models.AddTicketViewModel
+
+@{
+    ViewBag.Title = "AddTicket";
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Add Ticket</h3>
+                <div class="pull-right"><span class="msg">@ViewBag.msg</span></div>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+            <div class="box-body">
+@using (Html.BeginForm("AddTicket", "Ticket", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="form-group">
+                    <label>Module</label>
+                    @Html.DropDownListFor(model => model.Tkt.TicketModule.ModuleID, new SelectList(Model.TktModules, "ModuleID", "Module"), "--Select Module of Ticket--", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Tkt.TicketModule.ModuleID, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    <label>Nature</label>
+                    @Html.DropDownListFor(model => model.Tkt.Nature.NatureID, new SelectList(Model.TktNatures, "NatureID", "Nature"), "--Select Nature of Ticket--", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Tkt.Nature.NatureID, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    <label>Ticket Description</label>
+                    @Html.EditorFor(model => model.Tkt.TicketDescription, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Tkt.TicketDescription, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    <label>Select Files</label>
+                    @Html.TextBoxFor(model => model.Tkt.files, "", new { @type = "file", @multiple = "multiple" })
+                    @Html.ValidationMessageFor(model => model.Tkt.files, "", new { @class = "text-danger" })
+                </div>     
+
+                <div class="form-group">
+                    <div class="text-center">
+                        <input type="submit" value="Submit Ticket" class="btn btn-success" />
+                    </div>
+                </div>
+}
+            </div>
+            @*<div class="box-footer">
+                list
+            </div>*@
+        </div>                
+    </div>
+    <div class="col-lg-6">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Recently Added Tickets</h3>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+            <div class="box-body">
+                <table id="TktTbl" class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Ticket</th>
+                            <th>Module</th>                            
+                            <th>Created Date</th>
+                            <th>Status</th>
+                            <th>Nature</th>
+                            <th>Description</th>
+                            <th>Assigned To</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            foreach (var item in Model.MyTickets)
+                            {
+                                var TktDesc = item.TicketDescription.Length <= 15 ? item.TicketDescription : item.TicketDescription.Substring(0, 15);
+                                
+                                <tr>
+                                    <td><a href="#" title="@item.TicketDescription"> @TktDesc</a></td>
+                                    <td>@item.TicketModule.Module</td>                                    
+                                    <td>@Convert.ToDateTime(item.CreatedDate).ToString("MM/dd/yyyy H:mm")</td>
+                                    <td>@item.Status.Status</td>
+                                    <td>@item.Nature.Nature</td>
+                                    <td>@item.TicketDescription</td>
+                                    @{
+                                        if (item.AssignedTo.UID != 0)
+                                        {
+                                            <td><a href="#">@item.AssignedTo.Name</a></td>
+                                        }
+                                        else
+                                        {
+                                            <td>@item.AssignedTo.Name</td>
+                                        }
+                                    }
+                                    <td><a class="btn btn-info btn-sm"><i class="fa fa-pencil"></i> Update</a></td>
+                                </tr>
+                                }
+                            }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+        </div>
+<script>
+    $(document).ready(function () {
+
+        $('#TktTbl').DataTable({
+            responsive: true,
+            "fnDrawCallback": function (oSettings) {
+                //Below code will hide Pagination if row count is less than 5
+                if ($('#TktTbl tr').length < 5) {
+                    $('.dataTables_paginate').hide();
+                }
+            }
+        });
+
+        setTimeout(function () {
+            $('.msg').fadeOut('fast');
+        }, 5000);
+    });
+    
+</script>
+        @*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+@*<script src="~/Scripts/jquery-1.12.4.min.js"></script>*@
+        <script src="~/Scripts/jquery.validate.min.js"></script>
+        <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
