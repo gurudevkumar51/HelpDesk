@@ -24,6 +24,7 @@ namespace HelpDeskBAL.Ticket
         public HelpDeskEntities.Ticket.Ticket TicketByID(int tktID)
         {
             var tkt= tktRepo.TicketByID(tktID).FirstOrDefault();
+            tkt.AllFiles = LogRepo.Files(tktID);
             //tkt.Comments = cmntRepo.CommentList(tktID);
             return tkt;
         }
@@ -57,13 +58,13 @@ namespace HelpDeskBAL.Ticket
             return flag;
         }
 
-        public Boolean CloseTicket(int ClosedBy, int tktID)
+        public Boolean CloseTicket(int ClosedBy, int tktID, string ClosedByName)
         {
             string msg = "";
             var st = tktRepo.UpdateTicketStatus(tktID, 3);//3 Status id means Closed
             if (st > 0)
             {
-                var log = LogRepo.AddTicketLog(ClosedBy, "Closed by " + ClosedBy, tktID, out msg);
+                var log = LogRepo.AddTicketLog(ClosedBy, "Closed by " + ClosedByName, tktID, out msg);
                 if (log > 0)
                 {
                     return true;
@@ -89,7 +90,7 @@ namespace HelpDeskBAL.Ticket
                 {
                     foreach (HttpPostedFileBase file in tkt.files)
                     {
-                        var fileFlag = SaveTicketFiles(file, tktlogID, msg, out msg);
+                        var fileFlag = SaveTicketFiles(file, tktlogID, InsertedId, msg, out msg);
                     }
                 }
             }
@@ -98,12 +99,13 @@ namespace HelpDeskBAL.Ticket
             return InsertedId;
         }
 
-        private Boolean SaveTicketFiles(HttpPostedFileBase file, int tktlogID, string InMsg, out string OutMsg)
+        private Boolean SaveTicketFiles(HttpPostedFileBase file, int tktlogID,int tktID, string InMsg, out string OutMsg)
         {
             OutMsg = InMsg;
             string Filepath = "~/TicketFiles";
             try
             {
+                string OriginalFileName = file.FileName;
                 #region Saving file in TicketFiles folder
                 bool exists = System.IO.Directory.Exists(HttpContext.Current.Server.MapPath(Filepath));
                 if (!exists)
@@ -117,7 +119,7 @@ namespace HelpDeskBAL.Ticket
                 #endregion
 
                 #region Storing file details in database
-                var FileFlag = LogRepo.AddFileLog(tktlogID, filename, Path.GetExtension(file.FileName));
+                var FileFlag = LogRepo.AddFileLog(tktlogID, tktID, OriginalFileName, filename, Path.GetExtension(file.FileName));
                 OutMsg = FileFlag > 0 ? InMsg : InMsg + " But not added file details in database"; 
                 #endregion
 
