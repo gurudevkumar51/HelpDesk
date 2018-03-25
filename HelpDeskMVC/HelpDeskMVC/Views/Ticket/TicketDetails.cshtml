@@ -1,0 +1,226 @@
+﻿@model HelpDeskEntities.Ticket.Ticket
+
+@{
+    ViewBag.Title = "TicketDetails";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Ticket Details</h3>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-lg-2">
+                        <label>Ticket Description:</label>
+                    </div>
+                    <div class="col-lg-8">
+                        @Model.TicketDescription
+                    </div>
+                    <div class="col-lg-2">
+                        if (Model.Status.ID != 3)
+                        {
+                        <a href="#" onclick="CloseTicket(@Model.TicketID)" class="btn btn-sm btn-danger">Close</a>
+                        }
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <label>Status:</label>
+                    </div>
+                    <div class="col-lg-3">
+                        @Model.Status.Status
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <label>Module</label>
+                    </div>
+                    <div class="col-lg-3">
+                        @Model.TicketModule.Module
+                    </div>
+                    <div class="col-lg-3">
+                        <label>Created Date</label>
+                    </div>
+                    <div class="col-lg-3">
+                        @Model.CreatedDate
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <label>Created By</label>
+                    </div>
+                    <div class="col-lg-3">
+                        @Model.CreatedByUser.Name (@Model.CreatedByUser.EmailID)
+                    </div>
+                    <div class="col-lg-3">
+                        <label>Assigned to</label>
+                    </div>
+                    <div class="col-lg-3">
+                        @Model.AssignedTo.Name (@Model.AssignedTo.EmailID)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Ticket TimeLine</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        @*<div class="input-group input-group-sm">
+                            <input id="cmntTb" type="text" class="form-control">
+                            <span class="input-group-btn">
+                                <a onclick="postComment()" href="#" class="btn btn-info btn-flat"><i class="fa fa-send"></i></a>
+                            </span>
+                            <span id="" class="text-danger"></span>
+                        </div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">        
+        <div class="box box-info direct-chat direct-chat-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">Comments</h3>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">                
+                <div class="input-group input-group-sm">
+                    <input id="cmntTb" type="text" class="form-control">
+                    <span class="input-group-btn">
+                        <a onclick="postComment()" href="#" class="btn btn-info btn-flat"><i class="fa fa-send"></i></a>
+                    </span>
+                    <span id="msg"></span>
+                </div>
+                <!-- Conversations are loaded here -->
+                <div class="direct-chat-messages" id="cmnts">
+                    <!--Here Comment content will come-->
+                </div>
+                <!--/.direct-chat-messages-->                
+            </div>
+            <!-- /.box-body -->
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        refreshComment();
+
+        $("#cmntTb").keypress(function (e) {
+            if (e.which == 13) {
+                postComment();
+            }
+        });
+    });
+
+    function postComment() {
+        var cmnt = $("#cmntTb").val();
+        if (cmnt.length == 0) {
+
+        } else {
+            var model = {
+                Comment: cmnt,
+                TicketID: '@Model.TicketID'
+            };
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("TicketComment", "Ticket")',
+                data: { tc: model },
+                async: true,
+                success: function (data) {
+                    if (data.status) {
+                        $("#cmntTb").val("");
+                        refreshComment();
+                    } else {
+                        swal("Sorry", "Something went wrong please try later", "error");
+                    }
+                }
+            });
+        }
+    }
+
+    function refreshComment() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("TicketComments", "Ticket")',
+            data: { tktID: @Model.TicketID },
+            async: true,
+            success: function (data) {
+                if(data.length > 0) {
+                    $('#cmnts').html('');
+                    //console.log(data[0].CommentBy.Name);
+
+                    var cmntTemplate="";
+                    for (i = 0; i < data.length; i++) {
+
+                        cmntTemplate=cmntTemplate+'<div class="direct-chat-msg right">'+
+                                            '<div class="direct-chat-info clearfix">'+
+                                                 '<span class="direct-chat-name pull-left">'+
+                                              data[i].CommentBy.Name +
+                                              '</span>'+
+                                                '<span class="direct-chat-timestamp pull-right">'+
+                                             data[i].CommentDate+
+                                             '</span>'+
+                                            '</div>'+
+                                            '<div class="direct-chat-text">'+
+                                          data[i].Comment+
+                                            '</div>'+
+                                        '</div>';
+                    }
+                    $('#cmnts').append(cmntTemplate);
+                }
+            }
+        });
+    }
+
+    function CloseTicket(id) {
+        console.log(id);
+        swal({
+            title: 'Are you sure?',
+            text: "You want to close this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            console.log(result);
+            if (result) {
+                closeTicketSubmit(id);
+            }
+        })
+    }
+
+    function closeTicketSubmit(id) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("CloseTicket", "Ticket")',
+            data: { tktID: id },
+            success: function (data) {
+                if (data.status) {
+                    swal('Deleted!', 'Ticket closed.', 'success');
+                    location.reload();
+                } else {
+                    swal('Sorry!', 'Unable to close.', 'error');
+                }
+            }
+        });
+    }
+
+</script>
