@@ -5,6 +5,7 @@ using HelpDeskEntities.Ticket;
 using HelpDeskMVC.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -52,7 +53,7 @@ namespace HelpDeskMVC.Controllers
         public ActionResult MyActiveTicket()
         {
             var AssignBy = Convert.ToInt32(GenericClass.CsvToStringArray(User.Identity.Name)[2]);
-            return View("Index", Tkt.AllActiceTickets().Where(u=>u.CreatedBy==AssignBy));
+            return View("Index", Tkt.AllActiceTickets().Where(u => u.CreatedBy == AssignBy));
         }
 
         [Authorize(Roles = "SupeUser, EndUser")]
@@ -82,8 +83,11 @@ namespace HelpDeskMVC.Controllers
         [HttpGet]
         public ActionResult CloseTicket(int tktID)
         {
-            var AssignBy = Convert.ToInt32(GenericClass.CsvToStringArray(User.Identity.Name)[2]);
-            var flag = Tkt.CloseTicket(AssignBy, tktID);
+            var assignBy = GenericClass.CsvToStringArray(User.Identity.Name);
+            var AssignByID = Convert.ToInt32(assignBy[2]);
+            var AssignByName = assignBy[1];
+
+            var flag = Tkt.CloseTicket(AssignByID, tktID, AssignByName);
             return Json(new { status = flag }, JsonRequestBehavior.AllowGet);
         }
 
@@ -107,12 +111,20 @@ namespace HelpDeskMVC.Controllers
             HelpDeskEntities.Ticket.TicketComment cmnt = new HelpDeskEntities.Ticket.TicketComment();
             cmnt.Comment = tc.Comment;
             cmnt.TicketID = tc.TicketID;
-            cmnt.CommentBy.UID= Convert.ToInt32(GenericClass.CsvToStringArray(User.Identity.Name)[2]);
+            cmnt.CommentBy.UID = Convert.ToInt32(GenericClass.CsvToStringArray(User.Identity.Name)[2]);
 
             string msg = "";
 
-           var flag= cmntBAL.PostComment(cmnt, out msg);
+            var flag = cmntBAL.PostComment(cmnt, out msg);
             return Json(new { status = flag, Response = msg }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult DownloadFile(string filename, string OriginalFileName)
+        {
+            var filePath = Server.MapPath("~/TicketFiles/" + filename);
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            string fileName = OriginalFileName;
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
         }
     }
 }

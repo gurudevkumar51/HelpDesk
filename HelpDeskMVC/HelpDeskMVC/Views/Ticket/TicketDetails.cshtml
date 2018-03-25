@@ -16,15 +16,28 @@
             <div class="box-body">
                 <div class="row">
                     <div class="col-lg-2">
-                        <label>Ticket Description:</label>
+                        <label>Description:</label>
                     </div>
-                    <div class="col-lg-8">
+                    <div class="col-lg-6">
                         @Model.TicketDescription
                     </div>
                     <div class="col-lg-2">
-                        if (Model.Status.ID != 3)
-                        {
+                        <label>Attachments:</label>
+                        @{ 
+                            foreach(var file in Model.AllFiles)
+                            {
+                              <a href="@Url.Action("DownloadFile","Ticket",new { filename=file.FileName, OriginalFileName =file.FileDisplayName})" title="@file.FileDisplayName"><i class="fa fa-paperclip"></i></a> 
+                            }
+                        }
+                    </div>
+                    <div class="col-lg-2">
+                        @{if (Model.Status.ID != 3)
+                            {
+                                <a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
+                                    <i class="fa fa-gears"> Assign</i>
+                                </a>
                         <a href="#" onclick="CloseTicket(@Model.TicketID)" class="btn btn-sm btn-danger">Close</a>
+                            }
                         }
                     </div>
                 </div>
