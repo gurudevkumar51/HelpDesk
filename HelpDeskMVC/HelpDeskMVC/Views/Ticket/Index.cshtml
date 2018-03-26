@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Index";
     var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
+
 }
 
 <div class="box box-primary">
@@ -59,10 +60,10 @@
                         <td>@item.AssignedTo.Name</td>
                         <td>
                             @{
-                                if ((item.Status.ID != 3 || item.Status.ID != 4) && (role == "HelpdeskUser"))
+                                if ((item.Status.ID != 3 && item.Status.ID != 4) && (role == "HelpdeskUser"))
                                 {
                                     <a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = item.TicketModule.ModuleID, tktID = item.TicketID })" href="#" class="btn btn-sm btn-success">
-                                        if (item.AssignedTo.UID == 0)
+                                        @if (item.AssignedTo.UID == 0)
                                         {
                                         <i class="fa fa-gears"> Assign</i>
                                         }
@@ -74,7 +75,10 @@
                                 }
                                 if (role != "HelpdeskUser" && role != "SupportStaff")
                                 {
-                                    <a href="#" onclick="CloseTicket(@item.TicketID)" class="btn btn-sm btn-danger"> Close</a>
+                                    if (item.Status.ID != 3)
+                                    {
+                                        <a href="#" onclick="CloseTicket(@item.TicketID)" class="btn btn-sm btn-danger"> Close</a>
+                                    }
                                 }
                             }
                         </td>
@@ -88,13 +92,7 @@
 <script>
     $(document).ready(function () {
         $('#TktTbl').DataTable({
-            responsive: true,
-            "fnDrawCallback": function (oSettings) {
-                //Below code will hide Pagination if row count is less than 5
-                if ($('#TktTbl tr').length < 5) {
-                    $('.dataTables_paginate').hide();
-                }
-            }
+            responsive: true
         });
     });
 

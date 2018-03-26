@@ -1,8 +1,10 @@
 ﻿@model HelpDeskEntities.Ticket.Ticket
+@using HelpDeskCommon.CommonClasses
 
 @{
     ViewBag.Title = "TicketDetails";
     var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
+    var CurrentUser = Convert.ToInt32(GenericClass.CsvToStringArray(User.Identity.Name)[2]);
 }
 
 <div class="row">
@@ -40,28 +42,36 @@
                     </div>
                     <div class="col-lg-2">
                         @{
-                            if ((Model.Status.ID != 3 || Model.Status.ID != 4) && (role == "HelpdeskUser"))
-                            {
-                                <a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
-                                    if (item.AssignedTo.UID == 0)
+                            if (Model.Status.ID != 3) {
+                                if ((Model.Status.ID != 4) && (role == "HelpdeskUser"))
+                                {
+                                    if (Model.AssignedTo.UID == 0)
                                     {
-                                        <i class="fa fa-gears"> Assign</i>
+                                <a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
+                                    <i class="fa fa-gears"> Assign</i>
+                                </a>
                                     }
                                     else
                                     {
-                                        <i class="fa fa-gears"> Esclate</i>
-                                    }
+                                <a data-fancybox data-type="ajax" data-src="@Url.Action("EsclateTicket", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
+                                    <i class="fa fa-gears"> Esclate</i>
                                 </a>
-                            }
-                            if (role != "HelpdeskUser" && role != "SupportStaff")
-                            {
+                                    }
+                                }
+                                if (role != "HelpdeskUser" && role != "SupportStaff" && Model.CreatedBy == CurrentUser)
+                                {
                                 <a href="#" onclick="CloseTicket(@Model.TicketID)" class="btn btn-sm btn-danger"> Close</a>
-                            }
-                            if (role != "admin" && role != "EndUser")
-                            {
-                                <a href="#" onclick="ResolveTicket(@Model.TicketID)" class="btn btn-sm btn-danger"> Resolve</a>
-                            }
-                        }
+                                }
+                                if (role != "admin" && role != "EndUser" && Model.CreatedBy != CurrentUser && Model.Status.ID != 4)
+                                {
+                                <a href="#" onclick="ResolveTicket(@Model.TicketID)" class="btn btn-sm btn-success"> Resolve</a>
+                                }
+                                if ((role == "EndUser" || role == "SupeUser") && (Model.Status.ID == 4 && Model.CreatedBy == CurrentUser))
+                                {
+                                <a href="#" onclick="ReopenTicket(@Model.TicketID)" class="btn btn-sm bg-maroon"> Reopen</a>
+                                    }
+                                }
+                            }                        
                     </div>
                 </div>
                 <div class="row">
@@ -103,9 +113,9 @@
                                 <span>@Model.AssignedTo.Name</span>
                             }
                             else
-                            { <span>@Model.AssignedTo.Name (Model.AssignedTo.EmailID)</span> }
+                            { <span>@Model.AssignedTo.Name (@Model.AssignedTo.EmailID)</span> }
                         }
-                        
+
                     </div>
                 </div>
             </div>
@@ -218,6 +228,14 @@
             }
         });
     });
+
+    function ResolveTicket(id){
+        swal("Resolved "+id);
+    }
+
+    function ReopenTicket(id){
+        swal("Reopened "+id);
+    }
 
     function postComment() {
         var cmnt = $("#cmntTb").val();

@@ -13,7 +13,7 @@
             <!-- /.box-header -->
             <!-- form start -->
             <div class="box-body">              
-                <table class="table">
+                <table id="UsrTbl" class="table table-responsive">
                     <thead>
                         <tr>
                             <th>
@@ -68,6 +68,12 @@
         </div>
     </div>
 </div>
+
+<script>
+    $('#UsrTbl').DataTable({
+        responsive: true
+    });
+</script>
 
 
 

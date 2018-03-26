@@ -10,7 +10,7 @@
     
     @if (role == "SupeUser" || role == "EndUser" || role == "HelpdeskUser")
     {
-        <li class="@((ActiveController == "Ticket") && (ActiveAction!="Index" || ActiveAction!="ClosedTickets") ? "treeview active" : "treeview")">
+        <li class="@((ActiveController == "Ticket") && (ActiveAction=="AddTicket" || ActiveAction!="MyActiveTicket" || ActiveAction!= "MyClosedTicket") ? "treeview active" : "treeview")">
             <a href="#">
                 <i class="fa fa-ticket"></i> <span>My Tickets</span>
                 <span class="pull-right-container">

@@ -17,7 +17,9 @@ namespace HelpDeskMVC.Controllers
         private TicketBusiness Tkt = new TicketBusiness();
         private UserBusiness UserBAL = new UserBusiness();
 
+        #region Ticket Listing Action Methods
         [Authorize(Roles = "admin, SupeUser, HelpdeskUser")]
+        //It gives all Active Tickets
         public ActionResult Index()
         {
             return View(Tkt.AllActiceTickets());
@@ -29,7 +31,27 @@ namespace HelpDeskMVC.Controllers
             return View("Index", Tkt.AllClosedTickets());
         }
 
-        [Authorize(Roles = "SupeUser, EndUser")]
+        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
+        public ActionResult MyActiveTicket()
+        {
+            return View("Index", Tkt.MyActiveTickets());
+        }
+
+        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
+        public ActionResult MyClosedTicket()
+        {
+            return View("Index", Tkt.MyClosedTickets());
+        }
+
+        [Authorize]
+        public ActionResult TicketDetails(int tktID)
+        {
+            return View(Tkt.TicketByTktID(tktID));
+        }
+        #endregion
+
+        #region Ticket Transactions Methods
+        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
         [HttpGet]
         public ActionResult AddTicket()
         {
@@ -37,7 +59,7 @@ namespace HelpDeskMVC.Controllers
             return View(m);
         }
 
-        [Authorize(Roles = "SupeUser, EndUser")]
+        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
         [HttpPost]
         public ActionResult AddTicket(Ticket tkt)
         {
@@ -49,53 +71,52 @@ namespace HelpDeskMVC.Controllers
             return View(m);
         }
 
-        [Authorize(Roles = "SupeUser, EndUser")]
-        public ActionResult MyActiveTicket()
-        {
-            var AssignBy = Convert.ToInt32(GenericClass.CsvToStringArray(User.Identity.Name)[2]);
-            return View("Index", Tkt.AllActiceTickets().Where(u => u.CreatedBy == AssignBy));
-        }
-
-        [Authorize(Roles = "SupeUser, EndUser")]
-        public ActionResult MyClosedTicket()
-        {
-            var AssignBy = Convert.ToInt32(GenericClass.CsvToStringArray(User.Identity.Name)[2]);
-            return View("Index", Tkt.AllClosedTickets().Where(u => u.CreatedBy == AssignBy));
-        }
-
+        [Authorize(Roles = "HelpdeskUser")]
         [HttpGet]
         public ActionResult TicketAssign(int id, int tktID)
         {
             TicketAssign ta = new Models.TicketAssign();
             ta.TktID = tktID;
-            ta.UserList = UserBAL.HelpDeskUserModuleWise(id);
+            ta.UserList = UserBAL.AllSupportUsersForModule(id);//.GetAllSupportUsers();
             return PartialView(ta);
         }
 
         [HttpPost]
+        [Authorize(Roles = "HelpdeskUser")]
         public ActionResult TicketAssign(TicketAssign tas)
         {
-            var AssignBy = Convert.ToInt32(GenericClass.CsvToStringArray(User.Identity.Name)[2]);
-            Tkt.AssignTicketToUser(tas.TktID, tas.AssignTo, AssignBy, tas.Comment);
-            return View("Index", Tkt.AllTicket().Where(t => t.Status.ID == 1));
+            Tkt.AssignTicketToUser(tas.TktID, tas.AssignTo, tas.Comment);
+            return View("Index", Tkt.AllActiceTickets());
+        }
+
+        [Authorize(Roles = "HelpdeskUser")]
+        [HttpGet]
+        public ActionResult EsclateTicket(int id, int tktID)
+        {
+            TicketAssign ta = new Models.TicketAssign();
+            ta.TktID = tktID;
+            ta.UserList = UserBAL.GetAllSupportUsers();
+            return PartialView("TicketAssign", ta);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "HelpdeskUser")]
+        public ActionResult EsclateTicket(TicketAssign tas)
+        {
+            Tkt.AssignTicketToUser(tas.TktID, tas.AssignTo, tas.Comment);
+            return View("Index", Tkt.AllActiceTickets());
         }
 
         [HttpGet]
+        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
         public ActionResult CloseTicket(int tktID)
         {
-            var CloseBy = GenericClass.CsvToStringArray(User.Identity.Name);
-            var CloseByID = Convert.ToInt32(CloseBy[2]);
-            var CloseByName = CloseBy[1];
-
-            var flag = Tkt.CloseTicket(CloseByID, tktID, CloseByName);
+            var flag = Tkt.CloseTicket(tktID);
             return Json(new { status = flag }, JsonRequestBehavior.AllowGet);
-        }
+        } 
+        #endregion
 
-        public ActionResult TicketDetails(int tktID)
-        {
-            return View(Tkt.TicketByID(tktID));
-        }
-
+        [Authorize]
         [HttpGet]
         public ActionResult TicketComments(int tktID)
         {
@@ -103,7 +124,7 @@ namespace HelpDeskMVC.Controllers
             var cmnts = cmntBAL.TicketComments(tktID);
             return Json(cmnts, JsonRequestBehavior.AllowGet);
         }
-
+        [Authorize]
         [HttpPost]
         public ActionResult TicketComment(HelpDeskMVC.Models.TicketComment tc)
         {
@@ -119,6 +140,8 @@ namespace HelpDeskMVC.Controllers
             return Json(new { status = flag, Response = msg }, JsonRequestBehavior.AllowGet);
         }
 
+
+        [Authorize]
         public ActionResult DownloadFile(string filename, string OriginalFileName)
         {
             var filePath = Server.MapPath("~/TicketFiles/" + filename);
@@ -126,7 +149,7 @@ namespace HelpDeskMVC.Controllers
             string fileName = OriginalFileName;
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
         }
-
+        [Authorize]
         public ActionResult TktLogs(int tktID)
         {
             return Json(Tkt.AllLogs(tktID), JsonRequestBehavior.AllowGet);

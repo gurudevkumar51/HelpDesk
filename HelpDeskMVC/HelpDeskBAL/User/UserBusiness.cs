@@ -26,6 +26,13 @@ namespace HelpDeskBAL.User
         {
             return usrRepo.GetUserList(null).Where(u => u.UserGroup.GroupID == 5).ToList();
         }
+
+        public List<HelpDeskEntities.Account.User> AllSupportUsersForModule(int moduleID)
+        {
+            var uList = usrRepo.GetUserList(null);
+            return uList.Where(u => u.Modules.Any(m => m.ModuleID == moduleID) && u.UserGroup.GroupID == 5).ToList();
+        }
+
         // returns All HelpDesk User & Super User on the basis of moduleID
         public List<HelpDeskEntities.Account.User> HelpDeskUserModuleWise(int mdl)
         {
