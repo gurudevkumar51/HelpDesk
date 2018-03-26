@@ -11,10 +11,17 @@ namespace HelpDeskBAL.Module
     public class ModuleBAL
     {
         private ModulesRepository mdlRepo = new ModulesRepository();
+
         public List<Modules> AllModuleList()
         {
             return mdlRepo.AllModuleList();
         }
+
+        public List<Modules> ModuleListForUser(int UID)
+        {
+            return mdlRepo.ModuleListForUser(UID);
+        }
+
         public int AddNewModule(Modules mdl, out string msg)
         {
             return mdlRepo.AddNewModule(mdl, out msg);

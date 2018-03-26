@@ -83,11 +83,11 @@ namespace HelpDeskMVC.Controllers
         [HttpGet]
         public ActionResult CloseTicket(int tktID)
         {
-            var assignBy = GenericClass.CsvToStringArray(User.Identity.Name);
-            var AssignByID = Convert.ToInt32(assignBy[2]);
-            var AssignByName = assignBy[1];
+            var CloseBy = GenericClass.CsvToStringArray(User.Identity.Name);
+            var CloseByID = Convert.ToInt32(CloseBy[2]);
+            var CloseByName = CloseBy[1];
 
-            var flag = Tkt.CloseTicket(AssignByID, tktID, AssignByName);
+            var flag = Tkt.CloseTicket(CloseByID, tktID, CloseByName);
             return Json(new { status = flag }, JsonRequestBehavior.AllowGet);
         }
 
@@ -125,6 +125,11 @@ namespace HelpDeskMVC.Controllers
             byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
             string fileName = OriginalFileName;
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+        }
+
+        public ActionResult TktLogs(int tktID)
+        {
+            return Json(Tkt.AllLogs(tktID), JsonRequestBehavior.AllowGet);
         }
     }
 }

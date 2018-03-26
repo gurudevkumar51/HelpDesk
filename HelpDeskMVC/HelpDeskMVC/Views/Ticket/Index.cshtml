@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Index";
-    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : "EndUser"));
+    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
 }
 
 <div class="box box-primary">
@@ -13,67 +13,74 @@
     <!-- form start -->
     <div class="box-body">
         <table id="TktTbl" class="table table-responsive">
-           <thead>
-               <tr>
-                   <th>
-                       TicketDescription
-                   </th>
-                   <th>
-                       CreatedBy
-                   </th>
-                   <th>
-                       Nature
-                   </th>
-                   <th>
-                       Module
-                   </th>
-                   <th>Status</th>
-                   <th>
-                       CreatedDate
-                   </th>
-                   <th>Assigned To</th>
-                   <th></th>
-               </tr>
-           </thead>
-             <tbody>
-                 @foreach (var item in Model)
-                 {
-                     var TktDesc = item.TicketDescription.Length <= 20 ? item.TicketDescription : item.TicketDescription.Substring(0, 20);
-                     <tr>
-                         <td title="@item.TicketDescription">
-                             <a href="@Url.Action("TicketDetails","Ticket",new {tktID=item.TicketID })">@TktDesc</a>                             
-                         </td>
-                         <td title="@item.CreatedByUser.EmailID">
-                             @Html.DisplayFor(modelItem => item.CreatedByUser.Name)
-                         </td>
-                         <td>
-                             @Html.DisplayFor(modelItem => item.Nature.Nature)
-                         </td>
-                         <td>
-                             @Html.DisplayFor(modelItem => item.TicketModule.Module)
-                         </td>
-                         <td>@item.Status.Status</td>
-                         <td>
-                             @Html.DisplayFor(modelItem => item.CreatedDate)
-                         </td>
-                         <td>@item.AssignedTo.Name</td>
-                         <td>
-                             @{
-                                 if (role != "EndUser")
-                                 {
-                                     <a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = item.TicketModule.ModuleID, tktID = item.TicketID })" href="#" class="btn btn-sm btn-success">
-                                         <i class="fa fa-gears"> Assign</i>
-                                     </a>
-                                     if (item.Status.ID != 3)
-                                     {
-                                        <a href="#" onclick="CloseTicket(@item.TicketID)" class="btn btn-sm btn-danger">Close</a>
-                                     }
-                                 }
-                                 }
-                         </td>
-                     </tr>
-                                 }
-             </tbody>           
+            <thead>
+                <tr>
+                    <th>
+                        TicketDescription
+                    </th>
+                    <th>
+                        CreatedBy
+                    </th>
+                    <th>
+                        Nature
+                    </th>
+                    <th>
+                        Module
+                    </th>
+                    <th>Status</th>
+                    <th>
+                        CreatedDate
+                    </th>
+                    <th>Assigned To</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var TktDesc = item.TicketDescription.Length <= 20 ? item.TicketDescription : item.TicketDescription.Substring(0, 20);
+                    <tr>
+                        <td title="@item.TicketDescription">
+                            <a href="@Url.Action("TicketDetails","Ticket",new {tktID=item.TicketID })">@TktDesc</a>
+                        </td>
+                        <td title="@item.CreatedByUser.EmailID">
+                            @Html.DisplayFor(modelItem => item.CreatedByUser.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Nature.Nature)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TicketModule.Module)
+                        </td>
+                        <td>@item.Status.Status</td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatedDate)
+                        </td>
+                        <td>@item.AssignedTo.Name</td>
+                        <td>
+                            @{
+                                if ((item.Status.ID != 3 || item.Status.ID != 4) && (role == "HelpdeskUser"))
+                                {
+                                    <a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = item.TicketModule.ModuleID, tktID = item.TicketID })" href="#" class="btn btn-sm btn-success">
+                                        if (item.AssignedTo.UID == 0)
+                                        {
+                                        <i class="fa fa-gears"> Assign</i>
+                                        }
+                                        else
+                                        {
+                                        <i class="fa fa-gears"> Esclate</i>
+                                        }
+                                    </a>
+                                }
+                                if (role != "HelpdeskUser" && role != "SupportStaff")
+                                {
+                                    <a href="#" onclick="CloseTicket(@item.TicketID)" class="btn btn-sm btn-danger"> Close</a>
+                                }
+                            }
+                        </td>
+                    </tr>
+                                }
+            </tbody>
         </table>
     </div>
 </div>
@@ -88,7 +95,7 @@
                     $('.dataTables_paginate').hide();
                 }
             }
-        });        
+        });
     });
 
     function CloseTicket(id) {
@@ -109,7 +116,7 @@
         })
     }
 
-    function closeTicketSubmit(id) {        
+    function closeTicketSubmit(id) {
         $.ajax({
             type: "GET",
             url: '@Url.Action("CloseTicket", "Ticket")',
@@ -125,4 +132,4 @@
         });
     }
 </script>
-        
+

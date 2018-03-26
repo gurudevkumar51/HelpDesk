@@ -77,7 +77,9 @@
     <Compile Include="DataAccess\TktCommentRepository.cs" />
     <Compile Include="DataAccess\UserRepository.cs" />
     <Compile Include="DataMapper\CommentMapper.cs" />
+    <Compile Include="DataMapper\FileMapper.cs" />
     <Compile Include="DataMapper\ModuleMapper.cs" />
+    <Compile Include="DataMapper\TicketLogMapper.cs" />
     <Compile Include="DataMapper\TicketMapper.cs" />
     <Compile Include="DataMapper\UserMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

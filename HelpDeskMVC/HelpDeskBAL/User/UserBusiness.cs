@@ -16,6 +16,16 @@ namespace HelpDeskBAL.User
         {
             return usrRepo.GetUserList(email);
         }
+
+        public HelpDeskEntities.Account.User GetUserByUID(int UId)
+        {
+            return usrRepo.GetUserList(null).Where(u => u.UID == UId).FirstOrDefault();//.ToList();
+        }
+
+        public List<HelpDeskEntities.Account.User> GetAllSupportUsers()
+        {
+            return usrRepo.GetUserList(null).Where(u => u.UserGroup.GroupID == 5).ToList();
+        }
         // returns All HelpDesk User & Super User on the basis of moduleID
         public List<HelpDeskEntities.Account.User> HelpDeskUserModuleWise(int mdl)
         {

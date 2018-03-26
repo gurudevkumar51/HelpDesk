@@ -1,6 +1,6 @@
 ﻿@using HelpDeskCommon.CommonClasses
 @{ 
-    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : "EndUser"));
+    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
     var CurrentUserName = @GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name)[1];
     var CurrentUserEmail = @GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name)[0];
     TempData["ActiveAction"] = ViewContext.RouteData.Values["Action"].ToString();

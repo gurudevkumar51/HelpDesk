@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HelpDeskDAL.DataMapper;
+using HelpDeskEntities.Ticket;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -35,19 +37,22 @@ namespace HelpDeskDAL.DataAccess
             return InsertedID;
         }
 
-        public int AddFileLog(int TicketLogID, string FileName, string FileExtension)
+        public int AddFileLog(int TicketLogID,int tktID, string FileNameOriginal, string FileName, string FileExtension)
         {
             var InsertedID = 0;
             try
             {
                 SqlParameter[] parameters = {
+                         new SqlParameter("@id",0),
                          new SqlParameter("@Type", "B"),
                          new SqlParameter("@TicketLogID", TicketLogID),
+                         new SqlParameter("@TicketID", tktID),
                          new SqlParameter("@FileName",FileName),
-                         new SqlParameter("@FileExtension", FileExtension),
-                         new SqlParameter("@id",0)
+                         new SqlParameter("@FileNameOriginal",FileNameOriginal),
+                         new SqlParameter("@FileExtension", FileExtension)
+                         
                 };
-                parameters[4].Direction = ParameterDirection.Output;
+                parameters[0].Direction = ParameterDirection.Output;
 
                 InsertedID = ExecuteNonQueryWithReturnValue("SP_Manage_Logs", "@id", parameters);                
             }
@@ -56,6 +61,52 @@ namespace HelpDeskDAL.DataAccess
                 return 0;
             }
             return InsertedID;
+        }
+
+        public List<TicketFile> Files(int tktID)
+        {
+            try
+            {
+                FileMapper fileMapper = new FileMapper();
+                SqlParameter[] parameters =
+                    {
+                    new SqlParameter("@Type","C"),
+                    new SqlParameter("@TicketID",tktID)
+                };
+
+                IDataReader reader = base.GetReader("SP_Manage_Logs", parameters);
+                using (reader)
+                {
+                    return fileMapper.Map(reader);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public List<TicketLogs> TicketLogs(int tktID)
+        {
+            try
+            {
+                TicketLogMapper LogMapper = new TicketLogMapper();
+                SqlParameter[] parameters =
+                    {
+                    new SqlParameter("@Type","D"),
+                    new SqlParameter("@TicketID",tktID)
+                };
+
+                IDataReader reader = base.GetReader("SP_Manage_Logs", parameters);
+                using (reader)
+                {
+                    return LogMapper.Map(reader);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

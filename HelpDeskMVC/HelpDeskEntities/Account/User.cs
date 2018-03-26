@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace HelpDeskEntities.Account
@@ -8,6 +9,7 @@ namespace HelpDeskEntities.Account
         public User()
         {
             UserGroup = new UserGroup();
+            Modules = new List<HelpDeskEntities.Modules.Modules>();
         }
         public int UID { get; set; }
         [Required(ErrorMessage ="Please Enter Name")]
@@ -18,7 +20,7 @@ namespace HelpDeskEntities.Account
         [DataType(DataType.EmailAddress, ErrorMessage = "Please enter a valid Email ID")]
         //[System.Web.Mvc.Remote("CheckExistingEmail", "Miscellaneous", ErrorMessage = "Email already exists!")]
         public string EmailID { get; set; }
-
+        
         public string ContactNo { get; set; }
 
         [Display(Name = "Password")]
@@ -34,11 +36,9 @@ namespace HelpDeskEntities.Account
         public string ConfirmPassword { get; set; }
         public UserGroup UserGroup { get; set; }
 
+        public List<HelpDeskEntities.Modules.Modules> Modules { get; set; }
         [Display(Name = "Status")]
         public Boolean Status { get; set; }
-
-        public int ModuleID { get; set; }
-        public string Module { get; set; }
 
         [Display(Name = "Last Login")]
         public DateTime last_Login { get; set; }

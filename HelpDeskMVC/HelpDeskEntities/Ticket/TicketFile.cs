@@ -10,6 +10,8 @@ namespace HelpDeskEntities.Ticket
     {
         public int FileID { get; set; }
         public int TicketLogID { get; set; }
+        public int TicketId { get; set; }
+        public string FileDisplayName { get; set; }
         public string FileName { get; set; }
         public string FileExtension { get; set; }
         public string UploadDate { get; set; }

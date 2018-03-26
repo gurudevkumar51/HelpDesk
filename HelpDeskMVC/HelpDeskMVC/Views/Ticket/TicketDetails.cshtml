@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "TicketDetails";
+    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
 }
 
 <div class="row">
@@ -23,20 +24,42 @@
                     </div>
                     <div class="col-lg-2">
                         <label>Attachments:</label>
-                        @{ 
-                            foreach(var file in Model.AllFiles)
+                        @{
+                            if (Model.AllFiles.Count > 0)
                             {
-                              <a href="@Url.Action("DownloadFile","Ticket",new { filename=file.FileName, OriginalFileName =file.FileDisplayName})" title="@file.FileDisplayName"><i class="fa fa-paperclip"></i></a> 
+                                foreach (var file in Model.AllFiles)
+                                {
+                                    <a href="@Url.Action("DownloadFile", "Ticket", new { filename = file.FileName, OriginalFileName = file.FileDisplayName })" title="@file.FileDisplayName"><i class="fa fa-paperclip"></i></a>
+                                }
+                            }
+                            else
+                            {
+                                <span>No Files</span>
                             }
                         }
                     </div>
                     <div class="col-lg-2">
-                        @{if (Model.Status.ID != 3)
+                        @{
+                            if ((Model.Status.ID != 3 || Model.Status.ID != 4) && (role == "HelpdeskUser"))
                             {
                                 <a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
-                                    <i class="fa fa-gears"> Assign</i>
+                                    if (item.AssignedTo.UID == 0)
+                                    {
+                                        <i class="fa fa-gears"> Assign</i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa fa-gears"> Esclate</i>
+                                    }
                                 </a>
-                        <a href="#" onclick="CloseTicket(@Model.TicketID)" class="btn btn-sm btn-danger">Close</a>
+                            }
+                            if (role != "HelpdeskUser" && role != "SupportStaff")
+                            {
+                                <a href="#" onclick="CloseTicket(@Model.TicketID)" class="btn btn-sm btn-danger"> Close</a>
+                            }
+                            if (role != "admin" && role != "EndUser")
+                            {
+                                <a href="#" onclick="ResolveTicket(@Model.TicketID)" class="btn btn-sm btn-danger"> Resolve</a>
                             }
                         }
                     </div>
@@ -74,7 +97,15 @@
                         <label>Assigned to</label>
                     </div>
                     <div class="col-lg-3">
-                        @Model.AssignedTo.Name (@Model.AssignedTo.EmailID)
+                        @{
+                            if (Model.AssignedTo.UID == 0)
+                            {
+                                <span>@Model.AssignedTo.Name</span>
+                            }
+                            else
+                            { <span>@Model.AssignedTo.Name (Model.AssignedTo.EmailID)</span> }
+                        }
+                        
                     </div>
                 </div>
             </div>
@@ -89,20 +120,66 @@
             </div>
             <div class="box-body">
                 <div class="row">
-                    <div class="col-lg-12">
-                        @*<div class="input-group input-group-sm">
-                            <input id="cmntTb" type="text" class="form-control">
-                            <span class="input-group-btn">
-                                <a onclick="postComment()" href="#" class="btn btn-info btn-flat"><i class="fa fa-send"></i></a>
-                            </span>
-                            <span id="" class="text-danger"></span>
-                        </div>*@
+                    <div class="col-sm-12">
+                        <ul class="timeline">
+                            <!-- timeline time label -->
+                            @{
+                                var lgDate = DateTime.Now.AddYears(-20);
+                                foreach (var logItem in Model.TktLogs)
+                                {
+                                    var logDateTime = Convert.ToDateTime(logItem.LogDateTime);
+
+                                    if (lgDate.Date != logDateTime.Date)
+                                    {
+                                        lgDate = Convert.ToDateTime(logItem.LogDateTime);
+                                        <li class="time-label">
+                                            <span class="bg-red">
+                                                @logDateTime.ToString("dd MMM. yyyy")
+                                            </span>
+                                        </li>
+
+                                    }
+                                    <li>
+                                        @{
+                                            if (logItem.LogTypeID == 1)
+                                            {
+                                                <i class="fa fa-file-text bg-blue"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fa fa-envelope-open bg-blue"></i>
+                                            }
+                                        }
+
+                                        <div class="timeline-item">
+                                            <span class="time"><i class="fa fa-clock-o"></i> @logDateTime.Hour : @logDateTime.Minute</span>
+                                            @{
+                                                if (logItem.LogTypeID == 1)
+                                                {
+                                                    <h3 class="timeline-header"><a href="#">@logItem.LogBy.Name </a> <small>@logItem.Logtype</small></h3>
+                                                }
+                                                else
+                                                {
+                                                    <h3 class="timeline-header"><a href="#">@logItem.LogBy.Name </a> <small>Commented </small></h3>
+                                                }
+                                            }
+                                            <div class="timeline-body">
+                                                @logItem.LogContent
+                                            </div>
+                                        </div>
+                                    </li>
+                                                }
+                            }
+                            <li>
+                                <i class="fa fa-envelope bg-gray"></i>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-6">        
+    <div class="col-lg-6">
         <div class="box box-info direct-chat direct-chat-info">
             <div class="box-header with-border">
                 <h3 class="box-title">Comments</h3>
@@ -113,7 +190,7 @@
                 </div>
             </div>
             <!-- /.box-header -->
-            <div class="box-body">                
+            <div class="box-body">
                 <div class="input-group input-group-sm">
                     <input id="cmntTb" type="text" class="form-control">
                     <span class="input-group-btn">
@@ -125,7 +202,7 @@
                 <div class="direct-chat-messages" id="cmnts">
                     <!--Here Comment content will come-->
                 </div>
-                <!--/.direct-chat-messages-->                
+                <!--/.direct-chat-messages-->
             </div>
             <!-- /.box-body -->
         </div>

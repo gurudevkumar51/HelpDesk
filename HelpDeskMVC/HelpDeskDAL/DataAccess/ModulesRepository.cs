@@ -33,6 +33,30 @@ namespace HelpDeskDAL.DataAccess
                 return null;
             }
         }
+
+        public List<Modules> ModuleListForUser(int UID)
+        {
+            try
+            {
+                ModuleMapper objModuleMapper = new ModuleMapper();
+                SqlParameter[] parameters =
+                    {
+                    new SqlParameter("@UserID",UID),
+                    new SqlParameter("@Type","D")
+                };
+
+                IDataReader reader = base.GetReader("SP_Manage_Modules", parameters);
+                using (reader)
+                {
+                    return objModuleMapper.Map(reader);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public int AddNewModule(Modules mdl,out string msg)
         {
             var flag = 0; msg = "";

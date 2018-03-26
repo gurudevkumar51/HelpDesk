@@ -10,7 +10,8 @@ namespace HelpDeskEntities
     {
         Open = 1,
         InProgress,
-        Closed
+        Closed,
+        Resolved
     }
 
    public enum Ticket_Nature
@@ -25,6 +26,7 @@ namespace HelpDeskEntities
         admin = 1,
         HelpdeskUser,
         SupeUser,
-        EndUser
+        EndUser,
+        SupportStaff
     }
 }

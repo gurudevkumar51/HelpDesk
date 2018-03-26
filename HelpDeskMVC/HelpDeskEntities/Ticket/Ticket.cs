@@ -19,6 +19,8 @@ namespace HelpDeskEntities.Ticket
             AssignedTo = new User();
             CreatedByUser = new User();
             Comments = new List<TicketComment>();
+            AllFiles = new List<TicketFile>();
+            TktLogs = new List<TicketLogs>();
         }
 
         public int TicketID { get; set; }
@@ -34,8 +36,10 @@ namespace HelpDeskEntities.Ticket
         public User AssignedTo { get; set; }
         public User CreatedByUser { get; set; }
         public List<TicketComment> Comments { get; set; }
+        public List<TicketLogs> TktLogs { get; set; }
 
         [Display(Name = "Browse File")]
         public HttpPostedFileBase[] files { get; set; }
+        public List<TicketFile> AllFiles { get; set; }
     }
 }

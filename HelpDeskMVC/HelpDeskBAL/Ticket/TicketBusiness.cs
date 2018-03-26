@@ -1,6 +1,8 @@
-﻿using HelpDeskCommon.CommonClasses;
+﻿using HelpDeskBAL.Module;
+using HelpDeskCommon.CommonClasses;
 using HelpDeskDAL.DataAccess;
 using HelpDeskEntities;
+using HelpDeskEntities.Ticket;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,23 +18,29 @@ namespace HelpDeskBAL.Ticket
         private TicketRepository tktRepo = new TicketRepository();
         private LogsRepository LogRepo = new LogsRepository();
         
-
         public List<HelpDeskEntities.Ticket.Ticket> AllTicket()
         {
             return tktRepo.AllTicket(null);
         }
-        public HelpDeskEntities.Ticket.Ticket TicketByID(int tktID)
+
+        public List<HelpDeskEntities.Ticket.Ticket> TicketsAssignedToCurrentUser(int UID)
+        {
+            ModuleBAL mdl = new ModuleBAL();
+            List<HelpDeskEntities.Modules.Modules> mdls = new List<HelpDeskEntities.Modules.Modules>();
+            return tktRepo.AllTicket(null).Where(t => t.AssignedTo.UID == UID).ToList();
+        }
+
+        public HelpDeskEntities.Ticket.Ticket TicketByTktID(int tktID)
         {
             var tkt= tktRepo.TicketByID(tktID).FirstOrDefault();
             tkt.AllFiles = LogRepo.Files(tktID);
-            //tkt.Comments = cmntRepo.CommentList(tktID);
+            tkt.TktLogs = LogRepo.TicketLogs(tktID);
             return tkt;
         }
 
         public List<HelpDeskEntities.Ticket.Ticket> AllActiceTickets()
-        {
-            //var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : "EndUser"));
-            return tktRepo.AllTicket(null).Where(t => t.Status.ID == 1 || t.Status.ID == 2).ToList(); 
+        {            
+            return tktRepo.AllTicket(null).Where(t => t.Status.ID != 3).ToList(); 
         }
 
         public List<HelpDeskEntities.Ticket.Ticket> AllClosedTickets()
@@ -45,15 +53,33 @@ namespace HelpDeskBAL.Ticket
             return tktRepo.AllTicket(UId);
         }
 
-        //When-ever we will assign ticket to any user Status will become InProgress status
+        //When-ever we will assign ticket to any user Status will become InProgress status automatically
         public Boolean AssignTicketToUser(int TktID, int AssignedTo, int AssignedBy, string comment)
-        { string msg = "";
-            var otpt = tktRepo.AssignTicketToUser(TktID, AssignedTo, AssignedBy, comment);
+        {
+            string msg = "";
+            User.UserBusiness u = new User.UserBusiness();
+
+            var otpt = LogRepo.AddTicketLog(AssignedBy, "Assigned to " + u.GetUserByUID(AssignedTo).Name, TktID, out msg);
             var flag = otpt > 0 ? true : false;
             if (flag)
             {
+                tktRepo.AssignTicketToUser(TktID, AssignedTo, AssignedBy, comment);
                 tktRepo.UpdateTicketStatus(TktID, 2);//2 Status id means InProgress
-                LogRepo.AddTicketLog(AssignedBy, "Assigned to " + AssignedTo, TktID, out msg);
+            }
+            return flag;
+        }
+
+        public Boolean EsclateTicketToUser(int TktID, int AssignedTo, int AssignedBy, string comment)
+        {
+            string msg = "";
+            User.UserBusiness u = new User.UserBusiness();
+
+            var otpt = LogRepo.AddTicketLog(AssignedBy, "Esclated to " + u.GetUserByUID(AssignedTo).Name, TktID, out msg);
+            var flag = otpt > 0 ? true : false;
+            if (flag)
+            {
+                tktRepo.AssignTicketToUser(TktID, AssignedTo, AssignedBy, comment);
+                //tktRepo.UpdateTicketStatus(TktID, 2);//2 Status id means InProgress
             }
             return flag;
         }
@@ -65,6 +91,38 @@ namespace HelpDeskBAL.Ticket
             if (st > 0)
             {
                 var log = LogRepo.AddTicketLog(ClosedBy, "Closed by " + ClosedByName, tktID, out msg);
+                if (log > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+
+        public Boolean ResolveTicket(int ResolvedByID, int tktID, string ResolvedByName)
+        {
+            string msg = "";
+            var st = tktRepo.UpdateTicketStatus(tktID, 4);//4 Status id means Resolved
+            if (st > 0)
+            {
+                var log = LogRepo.AddTicketLog(ResolvedByID, "Resolved by " + ResolvedByName, tktID, out msg);
+                if (log > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+
+        public Boolean ReopenTicket(int ReopenByID, int tktID, string ReopenByName)
+        {
+            string msg = "";
+            var st = tktRepo.UpdateTicketStatus(tktID, 1);//1 Status id means Open
+            if (st > 0)
+            {
+                var log = LogRepo.AddTicketLog(ReopenByID, "Reopened by " + ReopenByName, tktID, out msg);
                 if (log > 0)
                 {
                     return true;
@@ -127,8 +185,14 @@ namespace HelpDeskBAL.Ticket
             }
             catch (Exception ex)
             {
+                OutMsg = InMsg + "File Not uploaded due to: " + ex.Message;
                 return false;
             }
+        }
+
+        public List<TicketLogs> AllLogs(int tktID)
+        {
+            return LogRepo.TicketLogs(tktID);
         }
     }
 }
