@@ -64,12 +64,13 @@ namespace HelpDeskBAL.Ticket
         }
         public HelpDeskEntities.Ticket.Ticket TicketByTktID(int tktID)
         {
-            var tkt = tktRepo.TicketByID(tktID).Where(t => t.CreatedBy == Convert.ToInt32(CurrentUser[2])).FirstOrDefault();
-            //if(tkt != null)
-            //{
+            //var tkt = tktRepo.TicketByID(tktID).Where(t => t.CreatedBy == Convert.ToInt32(CurrentUser[2])).FirstOrDefault();
+            var tkt = tktRepo.TicketByID(tktID).FirstOrDefault();
+            if (tkt != null)
+            {
                 tkt.AllFiles = LogRepo.Files(tktID);
                 tkt.TktLogs = LogRepo.TicketLogs(tktID);
-            //}
+            }
             return tkt;
         }
         public List<HelpDeskEntities.Ticket.Ticket> AllActiceTickets()
@@ -134,15 +135,23 @@ namespace HelpDeskBAL.Ticket
             return false;
         }
 
-        public Boolean ResolveTicket(int tktID)
+        public Boolean ResolveTicket(int tktID, string comment, HttpPostedFileBase[] files)
         {
             string msg = "";
             var st = tktRepo.UpdateTicketStatus(tktID, 4);//4 Status id means Resolved
             if (st > 0)
             {
-                var log = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Resolved by " + CurrentUser[1], tktID, out msg);
+                string ResolveComment = "Resolved by " + CurrentUser[1] + "<br />" + comment;
+                var log = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), ResolveComment, tktID, out msg);
                 if (log > 0)
                 {
+                    if (files.Count() > 0)
+                    {
+                        foreach (HttpPostedFileBase file in files)
+                        {
+                            var fileFlag = SaveTicketFiles(file, log, tktID, msg, out msg);
+                        }
+                    }
                     return true;
                 }
                 return false;
