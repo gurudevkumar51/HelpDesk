@@ -64,7 +64,10 @@
                                 }
                                 if (role != "admin" && role != "EndUser" && Model.CreatedBy != CurrentUser && Model.Status.ID != 4)
                                 {
-                                <a href="#" onclick="ResolveTicket(@Model.TicketID)" class="btn btn-sm btn-success"> Resolve</a>
+                                @*<a href="#" onclick="ResolveTicket(@Model.TicketID)" class="btn btn-sm btn-success"> Resolve</a>*@
+                                    <a data-fancybox data-type="ajax" data-src="@Url.Action("ResolveTicket", "Ticket", new { tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
+                                        <i class="fa fa-gears"> Resolve</i>
+                                    </a>
                                 }
                                 if ((role == "EndUser" || role == "SupeUser") && (Model.Status.ID == 4 && Model.CreatedBy == CurrentUser))
                                 {
@@ -228,11 +231,7 @@
             }
         });
     });
-
-    function ResolveTicket(id){
-        swal("Resolved "+id);
-    }
-
+       
     function ReopenTicket(id){
         swal("Reopened "+id);
     }

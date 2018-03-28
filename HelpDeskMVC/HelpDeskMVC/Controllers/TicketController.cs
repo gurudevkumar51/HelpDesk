@@ -71,6 +71,25 @@ namespace HelpDeskMVC.Controllers
             return View(m);
         }
 
+        [Authorize(Roles = "SupeUser,SupportStaff,HelpdeskUser")]
+        [HttpGet]
+        public ActionResult ResolveTicket(int tktID)
+        {
+            ResolveTicketViewModel resolve = new ResolveTicketViewModel();
+            resolve.TicketID = tktID;
+            return PartialView(resolve);
+        }
+
+        [Authorize(Roles = "SupeUser,SupportStaff,HelpdeskUser")]
+        [HttpPost]
+        public ActionResult ResolveTicket(ResolveTicketViewModel resolve)
+        {
+            string msg = "";
+            msg = Tkt.ResolveTicket(resolve.TicketID,resolve.ResolutionComment,resolve.ResolutionAttachment) ? "Ticket is resolved" : "Unable to change status";
+            ViewBag.msg = msg;
+            return RedirectToAction("TicketDetails", Tkt.TicketByTktID(resolve.TicketID));// View("TicketDetails", Tkt.TicketByTktID(resolve.TicketID));
+        }
+
         [Authorize(Roles = "HelpdeskUser")]
         [HttpGet]
         public ActionResult TicketAssign(int id, int tktID)
@@ -113,7 +132,7 @@ namespace HelpDeskMVC.Controllers
         {
             var flag = Tkt.CloseTicket(tktID);
             return Json(new { status = flag }, JsonRequestBehavior.AllowGet);
-        } 
+        }
         #endregion
 
         [Authorize]

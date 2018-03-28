@@ -145,11 +145,14 @@ namespace HelpDeskBAL.Ticket
                 var log = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), ResolveComment, tktID, out msg);
                 if (log > 0)
                 {
-                    if (files.Count() > 0)
+                    if (files != null)
                     {
-                        foreach (HttpPostedFileBase file in files)
+                        if (files.Count() > 0)
                         {
-                            var fileFlag = SaveTicketFiles(file, log, tktID, msg, out msg);
+                            foreach (HttpPostedFileBase file in files)
+                            {
+                                var fileFlag = SaveTicketFiles(file, log, tktID, Convert.ToInt32(CurrentUser[2]), msg, out msg);
+                            }
                         }
                     }
                     return true;
@@ -191,7 +194,7 @@ namespace HelpDeskBAL.Ticket
                 {
                     foreach (HttpPostedFileBase file in tkt.files)
                     {
-                        var fileFlag = SaveTicketFiles(file, tktlogID, InsertedId, msg, out msg);
+                        var fileFlag = SaveTicketFiles(file, tktlogID, InsertedId, Convert.ToInt32(CurrentUser[2]), msg, out msg);
                     }
                 }
             }
@@ -200,7 +203,7 @@ namespace HelpDeskBAL.Ticket
             return InsertedId;
         }
 
-        private Boolean SaveTicketFiles(HttpPostedFileBase file, int tktlogID, int tktID, string InMsg, out string OutMsg)
+        private Boolean SaveTicketFiles(HttpPostedFileBase file, int tktlogID, int tktID,int CurrentUser, string InMsg, out string OutMsg)
         {
             OutMsg = InMsg;
             string Filepath = "~/TicketFiles";
@@ -220,7 +223,7 @@ namespace HelpDeskBAL.Ticket
                 #endregion
 
                 #region Storing file details in database
-                var FileFlag = LogRepo.AddFileLog(tktlogID, tktID, OriginalFileName, filename, Path.GetExtension(file.FileName));
+                var FileFlag = LogRepo.AddFileLog(tktlogID, tktID, OriginalFileName, filename, Path.GetExtension(file.FileName), CurrentUser);
                 OutMsg = FileFlag > 0 ? InMsg : InMsg + " But not added file details in database";
                 #endregion
 

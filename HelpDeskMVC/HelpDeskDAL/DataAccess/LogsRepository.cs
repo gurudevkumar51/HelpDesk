@@ -37,7 +37,7 @@ namespace HelpDeskDAL.DataAccess
             return InsertedID;
         }
 
-        public int AddFileLog(int TicketLogID,int tktID, string FileNameOriginal, string FileName, string FileExtension)
+        public int AddFileLog(int TicketLogID,int tktID, string FileNameOriginal, string FileName, string FileExtension, int UploadedBy)
         {
             var InsertedID = 0;
             try
@@ -49,6 +49,7 @@ namespace HelpDeskDAL.DataAccess
                          new SqlParameter("@TicketID", tktID),
                          new SqlParameter("@FileName",FileName),
                          new SqlParameter("@FileNameOriginal",FileNameOriginal),
+                         new SqlParameter("@FileUploadedBy",UploadedBy),
                          new SqlParameter("@FileExtension", FileExtension)
                          
                 };

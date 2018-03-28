@@ -3,12 +3,11 @@
 @{
     ViewBag.Title = "Index";
     var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
-
 }
 
 <div class="box box-primary">
     <div class="box-header with-border">
-        <h3 class="box-title">Recently Added Tickets</h3>
+        <h3 class="box-title">Tickets</h3>
     </div>
     <!-- /.box-header -->
     <!-- form start -->
