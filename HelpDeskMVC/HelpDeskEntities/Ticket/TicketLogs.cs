@@ -13,7 +13,7 @@ namespace HelpDeskEntities.Ticket
         {
             LogBy = new User();
             LogFor = new User();
-
+            Files = new List<TicketFile>();
         }
         public int TicketID { get; set; }
         public int LogTypeID { get; set; }
@@ -22,5 +22,6 @@ namespace HelpDeskEntities.Ticket
         public string LogDateTime { get; set; }
         public User LogBy { get; set; }
         public User LogFor { get; set; }
+        public List<TicketFile> Files { get; set; }
     }
 }

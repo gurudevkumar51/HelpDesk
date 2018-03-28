@@ -239,7 +239,8 @@ namespace HelpDeskBAL.Ticket
         
         public List<TicketLogs> AllLogs(int tktID)
         {
-            return LogRepo.TicketLogs(tktID);
+            var LogData= LogRepo.TicketLogs(tktID);
+            return LogData;
         }
     }
 }

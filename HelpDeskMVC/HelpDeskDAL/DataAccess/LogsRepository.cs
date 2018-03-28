@@ -87,6 +87,31 @@ namespace HelpDeskDAL.DataAccess
             }
         }
 
+        public List<TicketFile> TicketLogFiles(int tktID, string UploadDateTime, int UID)
+        {
+            try
+            {
+                FileMapper fileMapper = new FileMapper();
+                SqlParameter[] parameters =
+                    {
+                    new SqlParameter("@Type","E"),
+                    new SqlParameter("@TicketID",tktID),
+                    new SqlParameter("@UploadDateTime",UploadDateTime),
+                    new SqlParameter("@FileUploadedBy", UID)
+                };
+
+                IDataReader reader = base.GetReader("SP_Manage_Logs", parameters);
+                using (reader)
+                {
+                    return fileMapper.Map(reader);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public List<TicketLogs> TicketLogs(int tktID)
         {
             try

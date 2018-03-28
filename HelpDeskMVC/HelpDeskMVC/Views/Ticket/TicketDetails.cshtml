@@ -42,39 +42,40 @@
                     </div>
                     <div class="col-lg-2">
                         @{
-                            if (Model.Status.ID != 3) {
+                            if (Model.Status.ID != 3)
+                            {
                                 if ((Model.Status.ID != 4) && (role == "HelpdeskUser"))
                                 {
                                     if (Model.AssignedTo.UID == 0)
                                     {
-                                <a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
-                                    <i class="fa fa-gears"> Assign</i>
-                                </a>
+                                        <a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
+                                            <i class="fa fa-gears"> Assign</i>
+                                        </a>
                                     }
                                     else
                                     {
-                                <a data-fancybox data-type="ajax" data-src="@Url.Action("EsclateTicket", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
-                                    <i class="fa fa-gears"> Esclate</i>
-                                </a>
+                                        <a data-fancybox data-type="ajax" data-src="@Url.Action("EsclateTicket", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
+                                            <i class="fa fa-gears"> Esclate</i>
+                                        </a>
                                     }
                                 }
                                 if (role != "HelpdeskUser" && role != "SupportStaff" && Model.CreatedBy == CurrentUser)
                                 {
-                                <a href="#" onclick="CloseTicket(@Model.TicketID)" class="btn btn-sm btn-danger"> Close</a>
+                                    <a href="#" onclick="CloseTicket(@Model.TicketID)" class="btn btn-sm btn-danger"> Close</a>
                                 }
                                 if (role != "admin" && role != "EndUser" && Model.CreatedBy != CurrentUser && Model.Status.ID != 4)
                                 {
-                                @*<a href="#" onclick="ResolveTicket(@Model.TicketID)" class="btn btn-sm btn-success"> Resolve</a>*@
+                                    @*<a href="#" onclick="ResolveTicket(@Model.TicketID)" class="btn btn-sm btn-success"> Resolve</a>*@
                                     <a data-fancybox data-type="ajax" data-src="@Url.Action("ResolveTicket", "Ticket", new { tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
                                         <i class="fa fa-gears"> Resolve</i>
                                     </a>
                                 }
                                 if ((role == "EndUser" || role == "SupeUser") && (Model.Status.ID == 4 && Model.CreatedBy == CurrentUser))
                                 {
-                                <a href="#" onclick="ReopenTicket(@Model.TicketID)" class="btn btn-sm bg-maroon"> Reopen</a>
-                                    }
+                                    <a href="#" onclick="ReopenTicket(@Model.TicketID)" class="btn btn-sm bg-maroon"> Reopen</a>
                                 }
-                            }                        
+                            }
+                        }
                     </div>
                 </div>
                 <div class="row">
@@ -113,7 +114,7 @@
                         @{
                             if (Model.AssignedTo.UID == 0)
                             {
-                                <span>@Model.AssignedTo.Name</span>
+                        <span>@Model.AssignedTo.Name</span>
                             }
                             else
                             { <span>@Model.AssignedTo.Name (@Model.AssignedTo.EmailID)</span> }
@@ -178,10 +179,21 @@
                                             }
                                             <div class="timeline-body">
                                                 @logItem.LogContent
+                                                @{
+                                                    if (logItem.Files.Count > 0)
+                                                    {
+                                                        @*<br />*@<div class="pull-right">
+                                                            @foreach (var file in logItem.Files)
+                                                            {
+                                                                <a href="@Url.Action("DownloadFile", "Ticket", new { filename = file.FileName, OriginalFileName = file.FileDisplayName })" title="@file.FileDisplayName"><i class="fa fa-paperclip"></i></a>
+                                                            }
+                                                        </div>
+                                                    }
+                                                }
                                             </div>
                                         </div>
                                     </li>
-                                                }
+                                                    }
                             }
                             <li>
                                 <i class="fa fa-envelope bg-gray"></i>
@@ -231,7 +243,7 @@
             }
         });
     });
-       
+
     function ReopenTicket(id){
         swal("Reopened "+id);
     }
@@ -271,7 +283,6 @@
             success: function (data) {
                 if(data.length > 0) {
                     $('#cmnts').html('');
-                    //console.log(data[0].CommentBy.Name);
 
                     var cmntTemplate="";
                     for (i = 0; i < data.length; i++) {
