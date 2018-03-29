@@ -85,6 +85,23 @@
                     <div class="col-lg-3">
                         @Model.Status.Status
                     </div>
+                    <div class="col-lg-3">
+                        <label>Priority:</label>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="row">
+                            <div id="priorityDiv" class="col-lg-6">High</div>
+                            @{
+                                if (role == "HelpdeskUser")
+                                {
+                                    <div class="col-lg-6">
+                                        <a href="#" id="editPriority" onclick="updatePriority()"><i class="fa fa-pencil"></i></a>
+                                        <a href="#" id="savePriority" onclick="savePriority()"><i class="fa fa-save"></i></a>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-3">
@@ -236,13 +253,34 @@
 <script>
     $(document).ready(function () {
         refreshComment();
-
+        $("#savePriority").hide();
+        $("#editPriority").show();
         $("#cmntTb").keypress(function (e) {
             if (e.which == 13) {
                 postComment();
             }
         });
     });
+
+    function updatePriority(){
+        $("#editPriority").hide();
+        $("#priorityDiv").html('');
+        $("#priorityDiv").append('<div class="form-group" id="priorityDropDown">'+      
+        '<select class="form-control" id="prioritySelect">'+
+          '<option value="1">Low</option>'+
+          '<option value="2">Medium</option>'+
+          '<option value="3">High</option>'+
+        '</select>      '+
+      '</div>');
+        $("#savePriority").show();
+    }
+
+    function savePriority(){
+        swal($('#priorityDropDown').val());
+        $("#savePriority").hide();
+        $("#priorityDropDown").hide();
+        $("#editPriority").show();
+    }
 
     function ReopenTicket(id){
         swal("Reopened "+id);
