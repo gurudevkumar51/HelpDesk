@@ -63,10 +63,10 @@ namespace HelpDeskDAL.DataAccess
             {
                 return null;
             }
-        }        
+        }
 
         public List<Ticket> TicketByID(int tktID)
-        {            
+        {
             try
             {
                 TicketMapper objModuleMapper = new TicketMapper();
@@ -132,6 +132,27 @@ namespace HelpDeskDAL.DataAccess
             catch (Exception ex)
             {
                 return 0;
+            }
+            return flag;
+        }
+
+        public int SetTicketPriority(int tktID, int PriorityID, out string msg)
+        {
+            msg = "";
+            var flag = 0;
+            try
+            {
+                SqlParameter[] parameters = {
+                    new SqlParameter("@TktID",tktID),
+                    new SqlParameter("@TktPriority",PriorityID),
+                    new SqlParameter("@Type","G")
+                };
+                flag = ExecuteNonQuery("SP_Manage_Ticket", parameters);
+            }
+            catch (Exception ex)
+            {
+                msg = "Can't Update Priority Due to: " + ex.Message;
+                return flag;
             }
             return flag;
         }

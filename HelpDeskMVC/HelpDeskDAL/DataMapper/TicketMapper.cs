@@ -20,6 +20,8 @@ namespace HelpDeskDAL.DataMapper
                 tkt.TicketModule.Module = reader["ModuleName"] == DBNull.Value ? "" : reader["ModuleName"].ToString();
                 tkt.Nature.NatureID = Convert.ToInt32(reader["NatureID"] == DBNull.Value ? 0 : reader["NatureID"]);
                 tkt.Nature.Nature = Enum.GetName(typeof(Ticket_Nature), tkt.Nature.NatureID);
+                var PriorityID = Convert.ToInt32(reader["PriorityID"] == DBNull.Value ? 0 : reader["PriorityID"]);
+                tkt.TicketPriority= Enum.GetName(typeof(Ticket_Priority), PriorityID);
                 tkt.CreatedBy = Convert.ToInt32(reader["CreatedBy"] == DBNull.Value ? 0 : reader["CreatedBy"]);
                 tkt.CreatedDate= reader["CreatedDate"] == DBNull.Value ? "" : reader["CreatedDate"].ToString();
                 tkt.AssignedTo.UID= Convert.ToInt32(reader["AssignedUserID"] == DBNull.Value ? 0 : reader["AssignedUserID"]);

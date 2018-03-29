@@ -90,9 +90,9 @@
                     </div>
                     <div class="col-lg-3">
                         <div class="row">
-                            <div id="priorityDiv" class="col-lg-6">High</div>
+                            <div id="priorityDiv" class="col-lg-6">@Model.TicketPriority</div>
                             @{
-                                if (role == "HelpdeskUser")
+                                if (role == "HelpdeskUser" && Model.Status.ID != 4 && Model.Status.ID != 3)
                                 {
                                     <div class="col-lg-6">
                                         <a href="#" id="editPriority" onclick="updatePriority()"><i class="fa fa-pencil"></i></a>
@@ -267,6 +267,7 @@
         $("#priorityDiv").html('');
         $("#priorityDiv").append('<div class="form-group" id="priorityDropDown">'+      
         '<select class="form-control" id="prioritySelect">'+
+          '<option value="0">Not Set</option>'+
           '<option value="1">Low</option>'+
           '<option value="2">Medium</option>'+
           '<option value="3">High</option>'+
@@ -276,9 +277,26 @@
     }
 
     function savePriority(){
-        swal($('#priorityDropDown').val());
-        $('#dropDownId :selected').text();
+        
+        var selectedVal=$('#priorityDropDown :selected').val();
+        var selectedText=$('#priorityDropDown :selected').text();
+        $("#priorityDiv").html('');
+        
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SetTicketPriority", "Ticket")',
+            data: { tktID: @Model.TicketID,priorityID:selectedVal },
+            async: false,
+            success: function (data) {
+                if (data.status) {
+                    $("#priorityDiv").append('<span>'+selectedText+'</span>');
+                } else {
+                    swal("Sorry", data.response, "error");
+                }
+            }
+        });
 
+        
 
         $("#savePriority").hide();
         $("#priorityDropDown").hide();

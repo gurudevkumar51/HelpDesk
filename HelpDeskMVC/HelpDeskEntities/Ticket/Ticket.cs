@@ -37,6 +37,7 @@ namespace HelpDeskEntities.Ticket
         public User CreatedByUser { get; set; }
         public List<TicketComment> Comments { get; set; }
         public List<TicketLogs> TktLogs { get; set; }
+        public string TicketPriority { get; set; }
 
         [Display(Name = "Browse File")]
         public HttpPostedFileBase[] files { get; set; }

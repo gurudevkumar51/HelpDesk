@@ -23,6 +23,7 @@ namespace HelpDeskEntities
 
     public enum Ticket_Priority
     {
+        NotSet,
         Low = 1,
         Medium,
         High

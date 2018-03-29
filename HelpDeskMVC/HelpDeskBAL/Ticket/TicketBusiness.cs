@@ -88,6 +88,18 @@ namespace HelpDeskBAL.Ticket
         #endregion
 
         #region Ticket Operations
+        public Boolean SetTicketPriority(int ticketID, int priorityID, out string msg)
+        {
+            string msg2 = "";
+            var data = tktRepo.SetTicketPriority(ticketID, priorityID, out msg) > 0 ? true : false;
+            if (data && priorityID != 0)
+            {
+                var prio = Enum.GetName(typeof(Ticket_Priority), priorityID);
+                LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Set Priority as " + prio, ticketID, out msg2);
+                msg = msg + " And " + msg2;
+            }            
+            return data;
+        }
         //When-ever we will assign ticket to any user Status will become InProgress status automatically
         public Boolean AssignTicketToUser(int TktID, int AssignedTo, string comment)
         {

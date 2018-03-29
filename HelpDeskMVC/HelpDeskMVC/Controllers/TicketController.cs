@@ -91,6 +91,15 @@ namespace HelpDeskMVC.Controllers
         }
 
         [Authorize(Roles = "HelpdeskUser")]
+        [HttpPost]
+        public ActionResult SetTicketPriority(int tktID, int priorityID)
+        {
+            string msg = "";
+            var flag = Tkt.SetTicketPriority(tktID, priorityID, out msg);
+            return Json(new { status = flag, response = msg }, JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize(Roles = "HelpdeskUser")]
         [HttpGet]
         public ActionResult TicketAssign(int id, int tktID)
         {
