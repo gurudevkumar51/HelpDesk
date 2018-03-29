@@ -21,7 +21,14 @@ namespace HelpDeskEntities
         Suggestion
     }
 
-   public enum User_Group
+    public enum Ticket_Priority
+    {
+        Low = 1,
+        Medium,
+        High
+    }
+
+    public enum User_Group
     {
         admin = 1,
         HelpdeskUser,
