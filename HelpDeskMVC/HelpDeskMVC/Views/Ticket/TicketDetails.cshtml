@@ -277,6 +277,9 @@
 
     function savePriority(){
         swal($('#priorityDropDown').val());
+        $('#dropDownId :selected').text();
+
+
         $("#savePriority").hide();
         $("#priorityDropDown").hide();
         $("#editPriority").show();
