@@ -136,7 +136,7 @@ namespace HelpDeskMVC.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
+        [Authorize(Roles = "SupeUser, EndUser, admin")]
         public ActionResult CloseTicket(int tktID)
         {
             var flag = Tkt.CloseTicket(tktID);
@@ -167,8 +167,6 @@ namespace HelpDeskMVC.Controllers
             var flag = cmntBAL.PostComment(cmnt, out msg);
             return Json(new { status = flag, Response = msg }, JsonRequestBehavior.AllowGet);
         }
-
-
         [Authorize]
         public ActionResult DownloadFile(string filename, string OriginalFileName)
         {
