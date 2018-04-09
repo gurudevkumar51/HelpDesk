@@ -2,6 +2,7 @@
 using HelpDeskCommon.CommonClasses;
 using HelpDeskDAL.DataAccess;
 using HelpDeskEntities;
+using HelpDeskEntities.Mail;
 using HelpDeskEntities.Ticket;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,7 @@ namespace HelpDeskBAL.Ticket
         private LogsRepository LogRepo = new LogsRepository();
         private List<HelpDeskEntities.Modules.Modules> UserModuleList = new List<HelpDeskEntities.Modules.Modules>();
         private string role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
-        private string[] CurrentUser = GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name);
-        
+        private string[] CurrentUser = GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name);        
 
         private List<HelpDeskEntities.Ticket.Ticket> AllTicket()
         {
@@ -105,11 +105,22 @@ namespace HelpDeskBAL.Ticket
         {
             string msg = "";
             User.UserBusiness u = new User.UserBusiness();
+            var asigneeUser = u.GetUserByUID(AssignedTo);
 
-            var otpt = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Assigned to " + u.GetUserByUID(AssignedTo).Name, TktID, out msg);
+            var otpt = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Assigned to " + asigneeUser.Name, TktID, out msg);
             var flag = otpt > 0 ? true : false;
             if (flag)
             {
+                string mailMsg = "";
+                EmailTemplate mailTemp = new EmailTemplate();
+                var tkt = tktRepo.TicketByID(TktID).FirstOrDefault();
+                mailTemp.Mail_To.Add(tkt.CreatedByUser.EmailID);
+                mailTemp.Mail_Cc.Add(asigneeUser.EmailID);
+                mailTemp.Mail_Cc.Add(CurrentUser[0]);
+                mailTemp.Mail_Subject = "Ticket Assigned";
+                mailTemp.Mail_Content = "Hello User,<br /> Ticket ID " + TktID + " Assigned to " + asigneeUser.Name + " Which was created by " + tkt.CreatedByUser.Name;
+                GenericClass.sendMail(mailTemp, out mailMsg);
+
                 tktRepo.AssignTicketToUser(TktID, AssignedTo, Convert.ToInt32(CurrentUser[2]), comment);
                 tktRepo.UpdateTicketStatus(TktID, 2);//2 Status id means InProgress
             }
@@ -120,12 +131,23 @@ namespace HelpDeskBAL.Ticket
         {
             string msg = "";
             User.UserBusiness u = new User.UserBusiness();
+            var asigneeUser = u.GetUserByUID(AssignedTo);
 
             var otpt = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Esclated to " + u.GetUserByUID(AssignedTo).Name, TktID, out msg);
             var flag = otpt > 0 ? true : false;
             if (flag)
-            {
+            {               
                 tktRepo.AssignTicketToUser(TktID, AssignedTo, Convert.ToInt32(CurrentUser[2]), comment);
+
+                EmailTemplate mailTemp = new EmailTemplate();
+                var tkt = tktRepo.TicketByID(TktID).FirstOrDefault();
+                mailTemp.Mail_To.Add(tkt.CreatedByUser.EmailID);
+                mailTemp.Mail_Cc.Add(asigneeUser.EmailID);
+                mailTemp.Mail_Cc.Add(CurrentUser[0]);
+                mailTemp.Mail_Subject = "Ticket Esclated";
+                mailTemp.Mail_Content = "Hello User,<br /> Ticket ID " + TktID + " Esclated to " + asigneeUser.Name + " Which was created by " + tkt.CreatedByUser.Name;
+                string mailMsg = "";
+                GenericClass.sendMail(mailTemp, out mailMsg);
                 //tktRepo.UpdateTicketStatus(TktID, 2);//2 Status id means InProgress
             }
             return flag;
@@ -137,6 +159,15 @@ namespace HelpDeskBAL.Ticket
             var st = tktRepo.UpdateTicketStatus(tktID, 3);//3 Status id means Closed
             if (st > 0)
             {
+                EmailTemplate mailTemp = new EmailTemplate();
+                var tkt = tktRepo.TicketByID(tktID).FirstOrDefault();
+                mailTemp.Mail_To.Add(tkt.CreatedByUser.EmailID);                
+                mailTemp.Mail_Cc.Add(CurrentUser[0]);
+                mailTemp.Mail_Subject = "Ticket Closed";
+                mailTemp.Mail_Content = "Hello User,<br /> Ticket ID " + tktID + " Closed by " + CurrentUser[1] + " Which was created by " + tkt.CreatedByUser.Name;
+                string mailMsg = "";
+                GenericClass.sendMail(mailTemp, out mailMsg);
+
                 var log = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Closed by " + CurrentUser[1], tktID, out msg);
                 if (log > 0)
                 {
@@ -153,6 +184,15 @@ namespace HelpDeskBAL.Ticket
             var st = tktRepo.UpdateTicketStatus(tktID, 4);//4 Status id means Resolved
             if (st > 0)
             {
+                EmailTemplate mailTemp = new EmailTemplate();
+                var tkt = tktRepo.TicketByID(tktID).FirstOrDefault();
+                mailTemp.Mail_To.Add(tkt.CreatedByUser.EmailID);
+                mailTemp.Mail_Cc.Add(CurrentUser[0]);
+                mailTemp.Mail_Subject = "Ticket Resolved";
+                mailTemp.Mail_Content = "Hello User,<br /> Ticket ID " + tktID + " Resolved by " + CurrentUser[1] + " Which was created by " + tkt.CreatedByUser.Name;
+                string mailMsg = "";
+                GenericClass.sendMail(mailTemp, out mailMsg);
+
                 string ResolveComment = "Resolved by " + CurrentUser[1] + "<br />" + comment;
                 var log = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), ResolveComment, tktID, out msg);
                 if (log > 0)
@@ -180,6 +220,16 @@ namespace HelpDeskBAL.Ticket
             var st = tktRepo.UpdateTicketStatus(tktID, 1);//1 Status id means Open
             if (st > 0)
             {
+                EmailTemplate mailTemp = new EmailTemplate();
+                var tkt = tktRepo.TicketByID(tktID).FirstOrDefault();
+                mailTemp.Mail_To.Add(tkt.CreatedByUser.EmailID);
+                mailTemp.Mail_Cc.Add(CurrentUser[0]);
+                mailTemp.Mail_Subject = "Ticket Reopened";
+                mailTemp.Mail_Content = "Hello User,<br /> Ticket ID " + tktID + " Reopened by " + CurrentUser[1] + " Which was created by " + tkt.CreatedByUser.Name;
+
+                string mailMsg = "";
+                GenericClass.sendMail(mailTemp, out mailMsg);
+
                 var log = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Reopened by " + CurrentUser[1], tktID, out msg);
                 if (log > 0)
                 {
@@ -200,8 +250,17 @@ namespace HelpDeskBAL.Ticket
             #region Start Generate log for Created ticket
             if (InsertedId > 0)
             {
-                var tktlogID = LogRepo.AddTicketLog(tkt.CreatedBy, msg, InsertedId, out msg);
+                EmailTemplate mailTemp = new EmailTemplate();
+                mailTemp.Mail_To.Add(CurrentUser[0]);
+                mailTemp.Mail_Cc.Add(CurrentUser[0]);
+                mailTemp.Mail_Subject = "Ticket Created";
+                mailTemp.Mail_Content = "Hello User,<br /> New Ticket created by " + CurrentUser[1];
 
+                string mailMsg = "";
+                GenericClass.sendMail(mailTemp, out mailMsg);
+
+                var tktlogID = LogRepo.AddTicketLog(tkt.CreatedBy, msg, InsertedId, out msg);
+                
                 if (tkt.files.Count() > 0 && tktlogID > 0)
                 {
                     foreach (HttpPostedFileBase file in tkt.files)

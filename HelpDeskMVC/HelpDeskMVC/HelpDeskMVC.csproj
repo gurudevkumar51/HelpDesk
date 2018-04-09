@@ -316,6 +316,7 @@
     <Content Include="Views\Ticket\TicketAssign.cshtml" />
     <Content Include="Views\Ticket\TicketDetails.cshtml" />
     <Content Include="Views\Ticket\ResolveTicket.cshtml" />
+    <Content Include="Views\User\UserProfile.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

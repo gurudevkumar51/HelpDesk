@@ -22,30 +22,35 @@ namespace HelpDeskMVC.Controllers
         //It gives all Active Tickets
         public ActionResult Index()
         {
+            TempData["Title"] = "Active Tickets";
             return View(Tkt.AllActiceTickets());
         }
 
         [Authorize(Roles = "admin, SupeUser, HelpdeskUser")]
         public ActionResult ClosedTickets()
         {
+            TempData["Title"] = "Closed Tickets";
             return View("Index", Tkt.AllClosedTickets());
         }
 
         [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
         public ActionResult MyActiveTicket()
         {
+            TempData["Title"] = "My Active Tickets";
             return View("Index", Tkt.MyActiveTickets());
         }
 
         [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
         public ActionResult MyClosedTicket()
         {
+            TempData["Title"] = "My Closed Tickets";
             return View("Index", Tkt.MyClosedTickets());
         }
 
         [Authorize]
         public ActionResult TicketDetails(int tktID)
         {
+            TempData["Title"] = "Ticket Details";
             return View(Tkt.TicketByTktID(tktID));
         }
         #endregion
@@ -55,6 +60,7 @@ namespace HelpDeskMVC.Controllers
         [HttpGet]
         public ActionResult AddTicket()
         {
+            TempData["Title"] = "Add Ticket";
             AddTicketViewModel m = new AddTicketViewModel();
             return View(m);
         }
@@ -66,7 +72,7 @@ namespace HelpDeskMVC.Controllers
             string msg = "";
             Tkt.AddNewTicket(tkt, out msg);
             ViewBag.msg = msg;
-
+            TempData["Title"] = "Add Ticket";
             AddTicketViewModel m = new AddTicketViewModel();
             return View(m);
         }
@@ -86,8 +92,15 @@ namespace HelpDeskMVC.Controllers
         {
             string msg = "";
             msg = Tkt.ResolveTicket(resolve.TicketID,resolve.ResolutionComment,resolve.ResolutionAttachment) ? "Ticket is resolved" : "Unable to change status";
-            ViewBag.msg = msg;
+            TempData["msg"] = ViewBag.msg = msg;
             return RedirectToAction("TicketDetails", Tkt.TicketByTktID(resolve.TicketID));// View("TicketDetails", Tkt.TicketByTktID(resolve.TicketID));
+        }
+
+        public ActionResult ReOpen(int TktID)
+        {            
+            TempData["Title"] = "Ticket Details";
+            TempData["msg"] = Tkt.ReopenTicket(TktID) ? "Ticket Reopened Succesfully" : "Unable to Reopen Ticket";
+            return View("TicketDetails", Tkt.TicketByTktID(TktID));
         }
 
         [Authorize(Roles = "HelpdeskUser")]

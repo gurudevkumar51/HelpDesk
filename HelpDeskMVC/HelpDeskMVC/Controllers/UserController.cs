@@ -16,7 +16,8 @@ namespace HelpDeskMVC.Controllers
         [Authorize]
         public ActionResult Index()
         {
-           var usrlist= usrBAL.GetUserList(null);
+            TempData["Title"] = "User List";
+            var usrlist= usrBAL.GetUserList(null);
             return View(usrlist);
         }
 
@@ -40,6 +41,14 @@ namespace HelpDeskMVC.Controllers
             string msg = "";
             var flag = usrBAL.AddNewUser(usr,modules, out msg) > 0 ? true : false;
             return Json(new { success = flag, responseText = msg }, JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize]
+        public ActionResult UserProfile(int UID)
+        {
+            TempData["Title"] = "User Profile";
+            var userData= usrBAL.UserDetails(UID);
+            return View(userData);
         }
     }
 }

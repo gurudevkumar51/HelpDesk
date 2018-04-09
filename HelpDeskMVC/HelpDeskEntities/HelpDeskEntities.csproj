@@ -74,6 +74,7 @@
     <Compile Include="Account\Login.cs" />
     <Compile Include="Account\User.cs" />
     <Compile Include="Account\UserGroup.cs" />
+    <Compile Include="Account\UserProfile.cs" />
     <Compile Include="EnumClasses.cs" />
     <Compile Include="Mail\EmailTemplate.cs" />
     <Compile Include="Mail\SmtpDetails.cs" />

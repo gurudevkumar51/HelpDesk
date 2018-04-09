@@ -107,7 +107,8 @@ namespace HelpDeskDAL.DataAccess
 
         public int UpdateUserProfile(User usr, out string msg)
         {
-            var flag = 0; msg = "";
+            var flag = 0;
+            msg = "";
             try
             {
                 SqlParameter[] parameters = {
@@ -125,6 +126,27 @@ namespace HelpDeskDAL.DataAccess
                 return flag;
             }
             return flag;
+        }
+
+        public UserProfile UserProfile(int UID)
+        {            
+            try
+            {
+                UserMapper objUsrMapper = new UserMapper();
+                SqlParameter[] parameters = {
+                 new SqlParameter("@Type", "H"),
+                 new SqlParameter("@UserID", UID)
+                };
+                IDataReader reader = base.GetReader("SP_Manage_User", parameters);
+                using (reader)
+                {
+                    return objUsrMapper.ProfileMap(reader).FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

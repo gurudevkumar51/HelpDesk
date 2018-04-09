@@ -1,8 +1,11 @@
 ﻿@using HelpDeskCommon.CommonClasses
-@{ 
+@{
     var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
-    var CurrentUserName = @GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name)[1];
-    var CurrentUserEmail = @GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name)[0];
+    var currentUSer = GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name);
+    var CurrentUserName = currentUSer[1];
+    var CurrentUserEmail = currentUSer[0];
+    var CurrentUserID = Convert.ToInt32(currentUSer[2]);
+    var CurrentUserMembersince = currentUSer[3];
     TempData["ActiveAction"] = ViewContext.RouteData.Values["Action"].ToString();
     TempData["ActiveController"] = ViewContext.RouteData.Values["Controller"].ToString();
 }
@@ -11,7 +14,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>@ViewBag.Title</title>
+    <title>@TempData["Title"]</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
@@ -21,7 +24,7 @@
     <link href="~/Content/Ionicons/ionicons.min.css" rel="stylesheet" />
     <!-- Theme style -->
     <link href="~/Content/AdminTheme/AdminLTE.min.css" rel="stylesheet" />
-        
+
     <link href="~/Content/AdminTheme/skins/skin-blue.min.css" rel="stylesheet" />
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -45,7 +48,7 @@
 
     <!--Validation-->
     @*<script src="~/Scripts/jquery.validate.min.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+        <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
 
     <!-- FancyBox 3.2.5-->
     <link href="~/Content/fancybox/jquery.fancybox.min.css" rel="stylesheet" />
@@ -60,7 +63,7 @@
 
 
     @*<link href="~/Content/DataTables/jquery.dataTables.min.css" rel="stylesheet" />
-    <script src="~/Content/DataTables/jquery.dataTables.min.js"></script>*@
+        <script src="~/Content/DataTables/jquery.dataTables.min.js"></script>*@
 
     <!-- SweetAlert2 -->
     <link href="~/Content/SweetAlert/sweetalert2.min.css" rel="stylesheet" />
@@ -72,7 +75,7 @@
         <!-- Main Header -->
         <header class="main-header">
             <!-- Logo -->
-            <a href="index2.html" class="logo">
+            <a href="@Url.Action("Index","Ticket")" class="logo">
                 <!-- mini logo for sidebar mini 50x50 pixels -->
                 <span class="logo-mini step size-48"><i class="ion-ios-people-outline"></i></span>
                 <!-- logo for regular state and mobile devices -->
@@ -86,54 +89,54 @@
                 </a>
                 <!-- Navbar Right Menu -->
                 <div class="navbar-custom-menu">
-                    <ul class="nav navbar-nav">                        
+                    <ul class="nav navbar-nav">
                         <!-- Notifications Menu -->
-                        <li class="dropdown notifications-menu">
-                            <!-- Menu toggle button -->
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-bell-o"></i>
-                                <span class="label label-warning">10</span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="header">You have 10 notifications</li>
-                                <li>
-                                    <!-- Inner Menu: contains the notifications -->
-                                    <ul class="menu">
-                                        <li>
-                                            <!-- start notification -->
-                                            <a href="#">
-                                                <i class="fa fa-users text-aqua"></i> 5 new members joined today
-                                            </a>
-                                        </li>
-                                        <!-- end notification -->
-                                    </ul>
-                                </li>
-                                <li class="footer"><a href="#">View all</a></li>
-                            </ul>
-                        </li>                        
+                        @*<li class="dropdown notifications-menu">
+                                <!-- Menu toggle button -->
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-bell-o"></i>
+                                    <span class="label label-warning">10</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="header">You have 10 notifications</li>
+                                    <li>
+                                        <!-- Inner Menu: contains the notifications -->
+                                        <ul class="menu">
+                                            <li>
+                                                <!-- start notification -->
+                                                <a href="#">
+                                                    <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                                                </a>
+                                            </li>
+                                            <!-- end notification -->
+                                        </ul>
+                                    </li>
+                                    <li class="footer"><a href="#">View all</a></li>
+                                </ul>
+                            </li>*@
                         <!-- User Account Menu -->
                         <li class="dropdown user user-menu">
                             <!-- Menu Toggle Button -->
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <!-- The user image in the navbar-->
-                                <img src="~/Images/user2-150x150.png" class="user-image" alt="User Image"/>
+                                <img src="~/Images/user2-150x150.png" class="user-image" alt="User Image" />
                                 <!-- hidden-xs hides the username on small devices so only the image appears. -->
                                 <span class="hidden-xs">@CurrentUserEmail</span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- The user image in the menu -->
                                 <li class="user-header">
-                                    <img src="~/Images/user2-150x150.png" class="img-circle" alt="User Image"/>
+                                    <img src="~/Images/user2-150x150.png" class="img-circle" alt="User Image" />
                                     <p>
                                         @CurrentUserName - @role
-                                        <small>Member since Nov. 2012</small>
+                                        <small>Member since @CurrentUserMembersince</small>
                                     </p>
                                 </li>
-                                <!-- Menu Body -->                                
+                                <!-- Menu Body -->
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
                                     <div class="pull-left">
-                                        <a href="#" class="btn btn-info"><i class="fa fa-user"></i> Profile</a>
+                                        <a href="@Url.Action("UserProfile","User",new { UID = CurrentUserID })" class="btn btn-info"><i class="fa fa-user"></i> Profile</a>
                                     </div>
                                     <div class="pull-right">
                                         <a href="@Url.Action("Logout","Account")" class="btn btn-info"><i class="fa fa-sign-out"></i> Sign out</a>
@@ -157,8 +160,8 @@
             <section class="sidebar">
                 <!-- Sidebar user panel (optional) -->
                 <div class="user-panel">
-                    <div class="pull-left image">                                              
-                        <img src="~/Images/user2-150x150.png" class="img-circle" alt="User Image"/>
+                    <div class="pull-left image">
+                        <img src="~/Images/user2-150x150.png" class="img-circle" alt="User Image" />
                     </div>
                     <div class="pull-left info">
                         <p>@CurrentUserName</p>
@@ -168,36 +171,36 @@
                 </div>
                 <!-- search form (Optional) -->
                 @*<form action="#" method="get" class="sidebar-form">
-                    <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Search...">
-                        <span class="input-group-btn">
-                            <button type="submit" name="search" id="search-btn" class="btn btn-flat">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </span>
-                    </div>
-                </form>*@
+                        <div class="input-group">
+                            <input type="text" name="q" class="form-control" placeholder="Search...">
+                            <span class="input-group-btn">
+                                <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </form>*@
                 <!-- /.search form -->
                 <!-- Sidebar Menu -->
                 @Html.Action("Menus", "Miscellaneous")
                 @*<ul class="sidebar-menu" data-widget="tree">
-                    <li class="header">HEADER</li>
-                     Optionally, you can add icons to the links 
-                    <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
-                    <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-users"></i> <span>Manage User</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">                            
-                            <li><a href="@Url.Action("Index","User")"><i class="fa fa-users"></i> User list</a></li>
-                            <li><a href="@Url.Action("AddUser","User")"><i class="fa fa-user-plus"></i> Add User</a></li>
-                        </ul>
-                    </li>
-                </ul>*@
+                        <li class="header">HEADER</li>
+                         Optionally, you can add icons to the links
+                        <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
+                        <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-users"></i> <span>Manage User</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Index","User")"><i class="fa fa-users"></i> User list</a></li>
+                                <li><a href="@Url.Action("AddUser","User")"><i class="fa fa-user-plus"></i> Add User</a></li>
+                            </ul>
+                        </li>
+                    </ul>*@
                 <!-- /.sidebar-menu -->
             </section>
             <!-- /.sidebar -->
@@ -207,8 +210,8 @@
             <!-- Content Header (Page header) -->
             <section class="content-header">
                 <h1>
-                    Page Header
-                    <small>Optional description</small>
+                    @TempData["Title"]
+                    <small>@TempData["msg"]</small>
                 </h1>
                 <ol class="breadcrumb">
                     <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -235,7 +238,7 @@
         <div class="control-sidebar-bg"></div>
     </div>
 
-    <!-- ./wrapper -->   
+    <!-- ./wrapper -->
     <script>
         @*function ChangePassword() {
             $.ajax({
@@ -252,7 +255,7 @@
                         'scrolling': 'no',
                         width: "25%",
                         height: "55%",
-                        //afterClose: function () { 
+                        //afterClose: function () {
                         //    parent.location.reload(true);
                         //}
                     })
@@ -271,7 +274,7 @@
             $.fancybox.hideLoading();
             $.fancybox.helpers.overlay.close();
         }
-    </script>     
+    </script>
 </body>
 </html>
 

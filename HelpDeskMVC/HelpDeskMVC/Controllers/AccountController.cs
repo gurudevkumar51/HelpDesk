@@ -38,7 +38,7 @@ namespace HelpDeskMVC.Controllers
             {
                 var authTicket = new FormsAuthenticationTicket(
                     1,
-                    user.EmailID + "," + user.Name + "," + user.UID,
+                    user.EmailID + "," + user.Name + "," + user.UID+","+user.MemberSince,
                     DateTime.Now,
                     DateTime.Now.AddMinutes(20),
                     false,
@@ -71,21 +71,25 @@ namespace HelpDeskMVC.Controllers
             return RedirectToAction("login", "Account");
         }
 
+        [Authorize]
         [HttpGet]
         public ActionResult ChangePassword()
         {
             return PartialView();
         }
         
+        [Authorize]
+        [HttpPost]
         public ActionResult ChangePassword(ChangePassword Cp)
         {
-            return Json(new { status = true }, JsonRequestBehavior.AllowGet);
+            string msg = "";
+            var flag = AccBAL.ChangePassword(Cp, out msg);
+            return Json(new { status = flag, response = msg }, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult ForgetPassword(string eml)
         {
             return Json(new { status = true }, JsonRequestBehavior.AllowGet);
         }
-
     }
 }

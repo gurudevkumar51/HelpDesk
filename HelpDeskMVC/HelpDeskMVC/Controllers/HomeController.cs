@@ -13,7 +13,5 @@ namespace HelpDeskMVC.Controllers
         {
             return View();
         }
-
-
     }
 }

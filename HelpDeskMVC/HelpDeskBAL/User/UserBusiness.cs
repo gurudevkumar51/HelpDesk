@@ -61,5 +61,10 @@ namespace HelpDeskBAL.User
         {
             return usrRepo.UpdateUserProfile(usr, out msg);
         }
+
+        public HelpDeskEntities.Account.UserProfile UserDetails(int UID)
+        {
+            return usrRepo.UserProfile(UID);
+        }
     }
 }

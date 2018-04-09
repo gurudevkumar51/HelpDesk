@@ -18,7 +18,6 @@ namespace HelpDeskEntities.Account
         [Display(Name = "Email ID")]
         [Required(ErrorMessage = "Enter your Email ID")]
         [DataType(DataType.EmailAddress, ErrorMessage = "Please enter a valid Email ID")]
-        //[System.Web.Mvc.Remote("CheckExistingEmail", "Miscellaneous", ErrorMessage = "Email already exists!")]
         public string EmailID { get; set; }
         
         public string ContactNo { get; set; }
@@ -34,6 +33,7 @@ namespace HelpDeskEntities.Account
         [Compare("Password", ErrorMessage = "Password and Confirmation Password must match.")]
         [MinLength(8, ErrorMessage = "Minimum 8 characters required")]
         public string ConfirmPassword { get; set; }
+        public string MemberSince { get; set; }
         public UserGroup UserGroup { get; set; }
 
         public List<HelpDeskEntities.Modules.Modules> Modules { get; set; }

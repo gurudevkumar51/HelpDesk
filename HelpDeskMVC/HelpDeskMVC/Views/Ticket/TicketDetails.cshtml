@@ -260,6 +260,18 @@
                 postComment();
             }
         });
+
+        //var d = new Date();
+        //d.setHours(0,0,0,0);
+        //setInterval((function(){
+
+        //    return function(){
+        //        d.setSeconds(d.getSeconds()+1);
+        //        var t = d.toLocaleTimeString("en-US", {hour12: false});
+        //        document.getElementById("demo").innerHTML = t;
+        //    }
+        //})(), 1000);
+
     });
 
     function updatePriority(){
@@ -294,9 +306,7 @@
                     swal("Sorry", data.response, "error");
                 }
             }
-        });
-
-        
+        });        
 
         $("#savePriority").hide();
         $("#priorityDropDown").hide();

@@ -108,10 +108,12 @@ namespace HelpDeskCommon.CommonClasses
                 smtp.UseDefaultCredentials = false;
                 smtp.Credentials = new System.Net.NetworkCredential(SMTP_UserName, SMTP_PWD);
                 smtp.EnableSsl = true;
+                //smtp.SendAsync(mail, null);//.Send(mail);
                 smtp.Send(mail);
+                mail.Dispose();
                 return true;
             }
-            catch (Exception ex)
+            catch (SmtpException ex)
             {
                 msg = ex.Message;
                 return false;
