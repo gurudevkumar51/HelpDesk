@@ -1,0 +1,54 @@
+﻿@model HelpDeskEntities.Account.UserProfile
+
+@{
+    ViewBag.Title = "UserProfile";
+}
+<div class="col-lg-7">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Ticket Details</h3>
+                    <div class="box-tools pull-right">
+                        @*<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>*@
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-lg-6"><label>Name</label></div>
+                        <div class="col-lg-6">@Html.DisplayFor(model => model.Name)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6"><label>Email ID</label></div>
+                        <div class="col-lg-6">@Html.DisplayFor(model => model.EmailID)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6"><label>Contact No</label></div>
+                        <div class="col-lg-6">@Html.DisplayFor(model => model.ContactNo)</div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6"><label>Last Login</label> </div>
+                        <div class="col-lg-6">@Html.DisplayFor(model => model.last_Login)</div>
+                    </div>
+                    <div class="row"><div class="col-lg-6">
+                        <label>Member Since</label> </div>
+                        <div class="col-lg-6">@Html.DisplayFor(model => model.MemberSince)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6"><label>User Group</label></div>
+                        <div class="col-lg-6">@Html.DisplayFor(model => model.UserGroup.UsrGroup)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6"><label>Status</label></div>
+                        <div class="col-lg-6">@Html.DisplayFor(model => model.Status)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6"><label>Total ticket assigned</label> </div>
+                        <div class="col-lg-6">@Html.DisplayFor(model => model.TicketAssigned)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
