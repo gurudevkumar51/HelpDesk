@@ -15,18 +15,12 @@ namespace HelpDeskMVC.Models
     {
         private ModuleBAL mdlb = new ModuleBAL();
         private TicketBusiness tktBAL = new TicketBusiness();
+        private CommentBAL cmntBAL = new CommentBAL();
         //private int CurrentUID = Convert.ToInt32(GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name)[2]);
         public AddTicketViewModel()
         {
             TktNatures = new List<TicketNature>();
-
-            foreach (var name in Enum.GetNames(typeof(Ticket_Nature)))
-            {
-                TicketNature ug = new TicketNature();
-                ug.NatureID = (int)Enum.Parse(typeof(Ticket_Nature), name);
-                ug.Nature = name;
-                TktNatures.Add(ug);
-            }
+            TktNatures = cmntBAL.TicketNature();
 
             TktModules = new List<Modules>();
             TktModules = mdlb.AllModuleList();

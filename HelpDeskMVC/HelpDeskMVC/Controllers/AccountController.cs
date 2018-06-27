@@ -75,7 +75,8 @@ namespace HelpDeskMVC.Controllers
         [HttpGet]
         public ActionResult ChangePassword()
         {
-            return PartialView();
+            //return PartialView();
+            return View();
         }
         
         [Authorize]
@@ -84,7 +85,16 @@ namespace HelpDeskMVC.Controllers
         {
             string msg = "";
             var flag = AccBAL.ChangePassword(Cp, out msg);
-            return Json(new { status = flag, response = msg }, JsonRequestBehavior.AllowGet);
+            //return Json(new { status = flag, response = msg }, JsonRequestBehavior.AllowGet);
+            if (flag)
+            {
+                ViewBag.msg = msg;
+            }
+            else
+            {
+                ViewBag.msg = msg;
+            }
+            return View();
         }
 
         public ActionResult ForgetPassword(string eml)

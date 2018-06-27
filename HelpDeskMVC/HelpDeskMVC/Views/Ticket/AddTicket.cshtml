@@ -1,8 +1,11 @@
 ﻿@model HelpDeskMVC.Models.AddTicketViewModel
 
 @{
-    ViewBag.Title = "AddTicket";
+    ViewBag.Title = "Add Ticket";
 }
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
 
 <div class="row">
     <div class="col-lg-6">
@@ -14,46 +17,42 @@
             <!-- /.box-header -->
             <!-- form start -->
             <div class="box-body">
-@using (Html.BeginForm("AddTicket", "Ticket", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    @Html.AntiForgeryToken()
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-                <div class="form-group">
-                    <label>Module</label>
-                    @Html.DropDownListFor(model => model.Tkt.TicketModule.ModuleID, new SelectList(Model.TktModules, "ModuleID", "Module"), "--Select Module of Ticket--", new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.Tkt.TicketModule.ModuleID, "", new { @class = "text-danger" })
-                </div>
-
-                <div class="form-group">
-                    <label>Nature</label>
-                    @Html.DropDownListFor(model => model.Tkt.Nature.NatureID, new SelectList(Model.TktNatures, "NatureID", "Nature"), "--Select Nature of Ticket--", new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.Tkt.Nature.NatureID, "", new { @class = "text-danger" })
-                </div>
-
-                <div class="form-group">
-                    <label>Ticket Description</label>
-                    @Html.EditorFor(model => model.Tkt.TicketDescription, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Tkt.TicketDescription, "", new { @class = "text-danger" })
-                </div>
-
-                <div class="form-group">
-                    <label>Select Files</label>
-                    @Html.TextBoxFor(model => model.Tkt.files, "", new { @type = "file", @multiple = "multiple" })
-                    @Html.ValidationMessageFor(model => model.Tkt.files, "", new { @class = "text-danger" })
-                </div>     
-
-                <div class="form-group">
-                    <div class="text-center">
-                        <input type="submit" value="Submit Ticket" class="btn btn-success" />
+                @using (Html.BeginForm("AddTicket", "Ticket", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <label>Module</label>
+                        @Html.DropDownListFor(model => model.Tkt.TicketModule.ModuleID, new SelectList(Model.TktModules, "ModuleID", "Module"), "--Select Module of Ticket--", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Tkt.TicketModule.ModuleID, "", new { @class = "text-danger" })
                     </div>
-                </div>
-}
+
+                    <div class="form-group">
+                        <label>Nature</label>
+                        @Html.DropDownListFor(model => model.Tkt.Nature.NatureID, new SelectList(Model.TktNatures, "NatureID", "Nature"), "--Select Nature of Ticket--", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Tkt.Nature.NatureID, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ticket Description</label>
+                        @Html.EditorFor(model => model.Tkt.TicketDescription, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Tkt.TicketDescription, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select Files</label>
+                        @Html.TextBoxFor(model => model.Tkt.files, "", new { @type = "file", @multiple = "multiple" })
+                        @Html.ValidationMessageFor(model => model.Tkt.files, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        <div class="text-center">
+                            <input type="submit" value="Submit Ticket" class="btn btn-success" />
+                        </div>
+                    </div>
+                }
             </div>
-            @*<div class="box-footer">
-                list
-            </div>*@
-        </div>                
+        </div>
     </div>
     <div class="col-lg-6">
         <div class="box box-primary">
@@ -67,7 +66,7 @@
                     <thead>
                         <tr>
                             <th>Ticket</th>
-                            <th>Module</th>                            
+                            <th>Module</th>
                             <th>Created Date</th>
                             <th>Status</th>
                             <th>Nature</th>
@@ -81,10 +80,10 @@
                             foreach (var item in Model.MyTickets)
                             {
                                 var TktDesc = item.TicketDescription.Length <= 15 ? item.TicketDescription : item.TicketDescription.Substring(0, 15);
-                                
+
                                 <tr>
                                     <td><a href="#" title="@item.TicketDescription"> @TktDesc</a></td>
-                                    <td>@item.TicketModule.Module</td>                                    
+                                    <td>@item.TicketModule.Module</td>
                                     <td>@Convert.ToDateTime(item.CreatedDate).ToString("MM/dd/yyyy H:mm")</td>
                                     <td>@item.Status.Status</td>
                                     <td>@item.Nature.Nature</td>
@@ -99,16 +98,18 @@
                                             <td>@item.AssignedTo.Name</td>
                                         }
                                     }
-                                    <td><a class="btn btn-info btn-sm"><i class="fa fa-pencil"></i> Update</a></td>
+                                    <td>
+                                        <a class="btn btn-info btn-sm" href="#" onclick="updateTicket(@item.TicketID)"><i class="fa fa-pencil"></i> Update</a>
+                                    </td>
                                 </tr>
-                                }
                             }
+                        }
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-        </div>
+</div>
 <script>
     $(document).ready(function () {
 
@@ -126,9 +127,19 @@
             $('.msg').fadeOut('fast');
         }, 5000);
     });
-    
+
+    function updateTicket(id) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("EditTicket", "Ticket")',
+            data: { id: id },
+            async: true,
+            success: function (data) {
+                //console.log(data);
+                $.fancybox(data);
+            }
+        });
+
+    }
+
 </script>
-        @*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
-@*<script src="~/Scripts/jquery-1.12.4.min.js"></script>*@
-        <script src="~/Scripts/jquery.validate.min.js"></script>
-        <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>

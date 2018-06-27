@@ -61,14 +61,17 @@
                             @{
                                 if ((item.Status.ID != 3 && item.Status.ID != 4) && (role == "HelpdeskUser"))
                                 {
-                                    <a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = item.TicketModule.ModuleID, tktID = item.TicketID })" href="#" class="btn btn-sm btn-success">
+                                    @*<a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = item.TicketModule.ModuleID, tktID = item.TicketID })" href="#" class="btn btn-sm btn-success">*@
+                                    <a class="btn btn-sm btn-success" href="#" onclick="AssignTicket(@item.TicketID, @item.TicketModule.ModuleID)">
+                                    @*<a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = item.TicketModule.ModuleID, tktID = item.TicketID })" href="#" class="btn btn-sm btn-success">*@
+                                        
                                         @if (item.AssignedTo.UID == 0)
                                         {
-                                        <i class="fa fa-gears"> Assign</i>
+                                            <i class="fa fa-gears"></i> <b>Assign</b>
                                         }
                                         else
                                         {
-                                        <i class="fa fa-gears"> Esclate</i>
+                                            <i class="fa fa-gears"></i> <b>Esclate</b>
                                         }
                                     </a>
                                 }
@@ -94,6 +97,17 @@
             responsive: true
         });
     });
+
+    function AssignTicket(tktID, moduleID) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("TicketAssign", "Ticket")?id=' + moduleID + '&tktID=' + tktID,
+            async: true,
+            success: function (data) {
+                $.fancybox(data);
+            }
+        });
+    }
 
     function CloseTicket(id) {
         console.log(id);

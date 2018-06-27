@@ -11,7 +11,7 @@ namespace HelpDeskEntities.Account
     {
         
 
-        public string   UserEmail { get; set; }
+        public string UserEmail { get; set; }
 
         [Display(Name = "Old Password")]
         [DataType(DataType.Password)]

@@ -1,4 +1,5 @@
-﻿using HelpDeskEntities.Account;
+﻿using HelpDeskCommon.CommonClasses;
+using HelpDeskEntities.Account;
 using System;
 using System.Data.SqlClient;
 
@@ -33,7 +34,7 @@ namespace HelpDeskDAL.DataAccess
                 SqlParameter[] parameters = {
                          new SqlParameter("@Type", "G"),
                          new SqlParameter("@Email", chpwd.UserEmail),
-                         new SqlParameter("@Password", chpwd.NewPassword)
+                         new SqlParameter("@Password", GenericClass.Hash(chpwd.NewPassword))//GenericClass.Hash(lgn.Password)
                         };
                 flag = ExecuteNonQuery("SP_Manage_User", parameters);
             }

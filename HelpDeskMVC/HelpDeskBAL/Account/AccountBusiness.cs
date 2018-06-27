@@ -16,6 +16,7 @@ namespace HelpDeskBAL.Account
         private AccountRepository accRepo = new AccountRepository();
         private UserBusiness usrRepo = new UserBusiness();
         private string[] CurrentUser = GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name);
+
         public HelpDeskEntities.Account.User login(HelpDeskEntities.Account.Login lgn, out string msg)
         {
             msg = "";
@@ -40,7 +41,7 @@ namespace HelpDeskBAL.Account
                     }
                     else
                     {
-                        msg = "You have entered incorrect password";
+                        msg = "Wrong Password/Email user";
                         return null;
                     }
                 }
@@ -59,6 +60,7 @@ namespace HelpDeskBAL.Account
 
         public Boolean ChangePassword(ChangePassword chp, out string msg)
         {
+            chp.UserEmail = CurrentUser[0];
             var flag = false; msg = "";
             var v = usrRepo.GetUserList(CurrentUser[0]).FirstOrDefault();
 

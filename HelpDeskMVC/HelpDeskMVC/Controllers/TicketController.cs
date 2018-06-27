@@ -1,4 +1,5 @@
-﻿using HelpDeskBAL.Ticket;
+﻿using HelpDeskBAL.Module;
+using HelpDeskBAL.Ticket;
 using HelpDeskBAL.User;
 using HelpDeskCommon.CommonClasses;
 using HelpDeskEntities.Ticket;
@@ -16,6 +17,8 @@ namespace HelpDeskMVC.Controllers
     {
         private TicketBusiness Tkt = new TicketBusiness();
         private UserBusiness UserBAL = new UserBusiness();
+        private CommentBAL cmntBAL = new CommentBAL();
+        private ModuleBAL mdlb = new ModuleBAL();
 
         #region Ticket Listing Action Methods
         [Authorize(Roles = "admin, SupeUser, HelpdeskUser")]
@@ -56,6 +59,7 @@ namespace HelpDeskMVC.Controllers
         #endregion
 
         #region Ticket Transactions Methods
+
         [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
         [HttpGet]
         public ActionResult AddTicket()
@@ -75,6 +79,27 @@ namespace HelpDeskMVC.Controllers
             TempData["Title"] = "Add Ticket";
             AddTicketViewModel m = new AddTicketViewModel();
             return View(m);
+        }
+
+        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
+        [HttpGet]
+        public ActionResult EditTicket(int id)
+        {
+            AddTicketViewModel m = new AddTicketViewModel();
+            ViewBag.TktNatures = m.TktNatures;
+            ViewBag.Modules = m.TktModules;
+            return View(m.MyTickets.Where(t => t.TicketID == id).FirstOrDefault());
+        }
+
+        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
+        [HttpPost]
+        public ActionResult EditTicket(Ticket tkt)
+        {
+            string msg = "";
+            Tkt.UpdateTicket(tkt, out msg);
+            ViewBag.msg = msg;
+            AddTicketViewModel m = new AddTicketViewModel();
+            return RedirectToAction("AddTicket", m);
         }
 
         [Authorize(Roles = "SupeUser,SupportStaff,HelpdeskUser")]

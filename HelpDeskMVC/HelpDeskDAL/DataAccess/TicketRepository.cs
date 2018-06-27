@@ -41,6 +41,32 @@ namespace HelpDeskDAL.DataAccess
             return InsertedID;
         }
 
+        public int UpdateTicket(Ticket tkt, out string msg)
+        {
+            var flag = 0; msg = "";
+            try
+            {
+                #region Sql Parameters
+                SqlParameter[] parameters = {
+                    new SqlParameter("@ModuleID",tkt.TicketModule.ModuleID),
+                    new SqlParameter("@NatureID",tkt.Nature.NatureID),
+                    new SqlParameter("@TktDescription",tkt.TicketDescription),
+                    new SqlParameter("@TktID",tkt.TicketID),
+                    new SqlParameter("@Type","H")
+                };
+
+                #endregion
+                flag = ExecuteNonQuery("SP_Manage_Ticket", parameters);
+                msg = flag > 0 ? "Ticket Updated" : "Unable to Update ticket try again later";
+            }
+            catch (Exception ex)
+            {
+                msg = "Unable to update due to: " + ex.Message;
+                return 0;
+            }
+            return flag;
+        }
+
         public List<Ticket> AllTicket(int? UID)
         {
             var Type = UID != null ? "C" : "B";
@@ -155,6 +181,28 @@ namespace HelpDeskDAL.DataAccess
                 return flag;
             }
             return flag;
+        }
+
+        public List<TicketCountStatusWise> DashboardFlagData()
+        {
+            try
+            {
+                TicketMapper objModuleMapper = new TicketMapper();
+                SqlParameter[] parameters =
+                    {
+                    new SqlParameter("@Type","I")
+                };
+
+                IDataReader reader = base.GetReader("SP_Manage_Ticket", parameters);
+                using (reader)
+                {
+                    return objModuleMapper.tktList(reader);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }
