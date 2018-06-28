@@ -33,7 +33,7 @@ namespace HelpDeskEntities
     {
         admin = 1,
         HelpdeskUser,
-        SupeUser,
+        SuperUser,
         EndUser,
         SupportStaff
     }

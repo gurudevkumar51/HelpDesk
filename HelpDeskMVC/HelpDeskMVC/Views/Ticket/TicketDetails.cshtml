@@ -31,7 +31,10 @@
                             {
                                 foreach (var file in Model.AllFiles)
                                 {
-                                    <a href="@Url.Action("DownloadFile", "Ticket", new { filename = file.FileName, OriginalFileName = file.FileDisplayName })" title="@file.FileDisplayName"><i class="fa fa-paperclip"></i></a>
+                                    @*<a href="@Url.Action("DownloadFile", "Ticket", new { filename = file.FileName, OriginalFileName = file.FileDisplayName })" title="@file.FileDisplayName"><i class="fa fa-paperclip"></i></a>*@
+                                    <a href="#" onclick="DownloadFile('@file.FileName','@file.FileDisplayName')" title="@file.FileDisplayName">
+                                        <i class="fa fa-paperclip"></i>
+                                    </a>
                                 }
                             }
                             else
@@ -48,15 +51,21 @@
                                 {
                                     if (Model.AssignedTo.UID == 0)
                                     {
-                                        <a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
+                                        @*<a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
+                                                <i class="fa fa-gears"> Assign</i>
+                                            </a>*@
+                                        <a class="btn btn-sm btn-success" href="#" onclick="AssignTicket(@Model.TicketID, @Model.TicketModule.ModuleID)">
                                             <i class="fa fa-gears"> Assign</i>
                                         </a>
                                     }
                                     else
                                     {
-                                        <a data-fancybox data-type="ajax" data-src="@Url.Action("EsclateTicket", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
+                                        <a class="btn btn-sm btn-success" href="#" onclick="AssignTicket(@Model.TicketID, @Model.TicketModule.ModuleID)">
                                             <i class="fa fa-gears"> Esclate</i>
                                         </a>
+                                        @*<a data-fancybox data-type="ajax" data-src="@Url.Action("EsclateTicket", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
+                                                <i class="fa fa-gears"> Esclate</i>
+                                            </a>*@
                                     }
                                 }
                                 if (role != "HelpdeskUser" && role != "SupportStaff" && Model.CreatedBy == CurrentUser)
@@ -65,10 +74,10 @@
                                 }
                                 if (role != "admin" && role != "EndUser" && Model.CreatedBy != CurrentUser && Model.Status.ID != 4)
                                 {
-                                    @*<a href="#" onclick="ResolveTicket(@Model.TicketID)" class="btn btn-sm btn-success"> Resolve</a>*@
-                                    <a data-fancybox data-type="ajax" data-src="@Url.Action("ResolveTicket", "Ticket", new { tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
+                                    <a href="#" onclick="ResolveTicket(@Model.TicketID)" class="btn btn-sm btn-success"> Resolve</a>
+                                    @*<a data-fancybox data-type="ajax" data-src="@Url.Action("ResolveTicket", "Ticket", new { tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
                                         <i class="fa fa-gears"> Resolve</i>
-                                    </a>
+                                    </a>*@
                                 }
                                 if ((role == "EndUser" || role == "SupeUser") && (Model.Status.ID == 4 && Model.CreatedBy == CurrentUser))
                                 {
@@ -131,7 +140,7 @@
                         @{
                             if (Model.AssignedTo.UID == 0)
                             {
-                        <span>@Model.AssignedTo.Name</span>
+                                <span>@Model.AssignedTo.Name</span>
                             }
                             else
                             { <span>@Model.AssignedTo.Name (@Model.AssignedTo.EmailID)</span> }
@@ -163,53 +172,60 @@
                                     if (lgDate.Date != logDateTime.Date)
                                     {
                                         lgDate = Convert.ToDateTime(logItem.LogDateTime);
-                                        <li class="time-label">
-                                            <span class="bg-red">
-                                                @logDateTime.ToString("dd MMM. yyyy")
-                                            </span>
-                                        </li>
-
+                            <li class="time-label">
+                                <span class="bg-red">
+                                    @logDateTime.ToString("dd MMM. yyyy")
+                                </span>
+                            </li>
                                     }
-                                    <li>
-                                        @{
+                            <li>
+                                @{
                                             if (logItem.LogTypeID == 1)
                                             {
-                                                <i class="fa fa-file-text bg-blue"></i>
+                                        <i class="fa fa-file-text bg-blue"></i>
                                             }
                                             else
                                             {
-                                                <i class="fa fa-envelope-open bg-blue"></i>
+                                        <i class="fa fa-envelope-open bg-blue"></i>
                                             }
-                                        }
+                                }
 
-                                        <div class="timeline-item">
-                                            <span class="time"><i class="fa fa-clock-o"></i> @logDateTime.Hour : @logDateTime.Minute</span>
-                                            @{
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> @logDateTime.Hour : @logDateTime.Minute</span>
+                                    @{
                                                 if (logItem.LogTypeID == 1)
                                                 {
-                                                    <h3 class="timeline-header"><a href="#">@logItem.LogBy.Name </a> <small>@logItem.Logtype</small></h3>
+                                            <h3 class="timeline-header"><a href="#">@logItem.LogBy.Name </a> <small>@logItem.Logtype</small></h3>
                                                 }
                                                 else
                                                 {
-                                                    <h3 class="timeline-header"><a href="#">@logItem.LogBy.Name </a> <small>Commented </small></h3>
+                                            <h3 class="timeline-header"><a href="#">@logItem.LogBy.Name </a> <small>Commented </small></h3>
                                                 }
-                                            }
-                                            <div class="timeline-body">
-                                                @logItem.LogContent
-                                                @{
-                                                    if (logItem.Files.Count > 0)
+                                    }
+                                    <div class="timeline-body">
+                                        @*@logItem.LogContent*@
+
+                                        @Html.Raw(logItem.LogContent)
+                                        @{
+                                                    if (logItem.Files != null)
                                                     {
-                                                        @*<br />*@<div class="pull-right">
-                                                            @foreach (var file in logItem.Files)
+                                                        if (logItem.Files.Count > 0)
+                                                        {
+                                                @*<br />*@<div class="pull-right">
+                                                    @foreach (var file in logItem.Files)
                                                             {
-                                                                <a href="@Url.Action("DownloadFile", "Ticket", new { filename = file.FileName, OriginalFileName = file.FileDisplayName })" title="@file.FileDisplayName"><i class="fa fa-paperclip"></i></a>
-                                                            }
-                                                        </div>
+                                                @*<a href="@Url.Action("DownloadFile", "Ticket", new { filename = file.FileName, OriginalFileName = file.FileDisplayName })" title="@file.FileDisplayName"><i class="fa fa-paperclip"></i></a>*@
+                                                        <a href="#" onclick="DownloadFile(@file.FileName,@file.FileDisplayName)" title="@file.FileDisplayName">
+                                                            <i class="fa fa-paperclip"></i>
+                                                        </a>
                                                     }
-                                                }
-                                            </div>
-                                        </div>
-                                    </li>
+                                                </div>
+                                                            }
+                                                        }
+                                        }
+                                    </div>
+                                </div>
+                            </li>
                                                     }
                             }
                             <li>
@@ -260,24 +276,48 @@
                 postComment();
             }
         });
-
-        //var d = new Date();
-        //d.setHours(0,0,0,0);
-        //setInterval((function(){
-
-        //    return function(){
-        //        d.setSeconds(d.getSeconds()+1);
-        //        var t = d.toLocaleTimeString("en-US", {hour12: false});
-        //        document.getElementById("demo").innerHTML = t;
-        //    }
-        //})(), 1000);
-
     });
+
+    function DownloadFile(FileName,FileDisplayName) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("DownloadFile", "Ticket")?filename=' + FileName+'&OriginalFileName='+FileDisplayName,
+            async: true,
+            success: function (data) {
+                window.location = '@Url.Action("DownloadFile", "Ticket")?filename=' + FileName+'&OriginalFileName='+FileDisplayName;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                swal("","File not available on server","error");
+            } 
+        });
+    }
+
+    function ResolveTicket(tktID) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("ResolveTicket", "Ticket")?tktID=' + tktID,
+            async: true,
+            success: function (data) {
+                $.fancybox(data);
+            }
+        });
+    }
+
+    function AssignTicket(tktID, moduleID) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("TicketAssign", "Ticket")?id=' + moduleID + '&tktID=' + tktID,
+            async: true,
+            success: function (data) {
+                $.fancybox(data);
+            }
+        });
+    }
 
     function updatePriority(){
         $("#editPriority").hide();
         $("#priorityDiv").html('');
-        $("#priorityDiv").append('<div class="form-group" id="priorityDropDown">'+      
+        $("#priorityDiv").append('<div class="form-group" id="priorityDropDown">'+
         '<select class="form-control" id="prioritySelect">'+
           '<option value="0">Not Set</option>'+
           '<option value="1">Low</option>'+
@@ -289,11 +329,11 @@
     }
 
     function savePriority(){
-        
+
         var selectedVal=$('#priorityDropDown :selected').val();
         var selectedText=$('#priorityDropDown :selected').text();
         $("#priorityDiv").html('');
-        
+
         $.ajax({
             type: "POST",
             url: '@Url.Action("SetTicketPriority", "Ticket")',
@@ -306,7 +346,7 @@
                     swal("Sorry", data.response, "error");
                 }
             }
-        });        
+        });
 
         $("#savePriority").hide();
         $("#priorityDropDown").hide();
@@ -377,7 +417,6 @@
     }
 
     function CloseTicket(id) {
-        console.log(id);
         swal({
             title: 'Are you sure?',
             text: "You want to close this!",
