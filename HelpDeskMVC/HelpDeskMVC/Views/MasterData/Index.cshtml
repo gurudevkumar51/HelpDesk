@@ -1,0 +1,309 @@
+﻿@{
+    ViewBag.Title = "Manage master Data";
+}
+
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Manage Master Data</h3>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3 id="moduleCount">Loading...</h3>
+                        <p>modules</p>
+                    </div>
+                    <div class="icon">
+                        <a href="#" onclick="ShowModule()" title="Show all"><i class="fa fa-eye"></i></a>
+                    </div>
+                    <a href="#" onclick="AddModule()" class="small-box-footer">Add New <i class="fa fa-plus-circle"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3 id="userGroupCount">Loading...</h3>
+                        <p>User Group</p>
+                    </div>
+                    <div class="icon">
+                        <a href="#" onclick="ShowUserGroup()" title="Show all"><i class="fa fa-eye"></i></a> 
+                    </div>
+                    <a href="#" onclick="AddUserGroup()" class="small-box-footer">Add new <i class="fa fa-plus-circle"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3 id="ticketNatureCount">Loading...</h3>
+                        <p>Ticket Nature</p>
+                    </div>
+                    <div class="icon">
+                        <a href="#" onclick="ShowTicketNature()" title="Show all"><i class="fa fa-eye"></i></a>
+                    </div>
+                    <a href="#" onclick="AddTicketNature()" class="small-box-footer">Add new <i class="fa fa-plus-circle"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    var moduleData = null;
+    var userGroupData = null;
+    var ticketNatureData = null;
+
+    $(document).ready(function () {
+        LoadModuleData();
+        LoadUserGroupData();
+        LoadTicketNature();
+    });
+
+    function LoadModuleData() {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("ModuleList", "Miscellaneous")',
+            async:false,
+            success: function (res) {
+                $("#moduleCount").text(res.length);
+                moduleData = res;
+            }
+        })
+    }
+
+    function LoadUserGroupData() {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("UserGroupList", "MasterData")',
+            success: function (res) {
+                $("#userGroupCount").text(res.length);
+                userGroupData = res;
+            }
+        })
+    }
+
+    function LoadTicketNature() {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("TicketNatureList", "MasterData")',
+            success: function (res) {
+                $("#ticketNatureCount").text(res.length);
+                ticketNatureData = res;
+            }
+        })
+    }
+
+    function ShowTicketNature() {
+        var TableData = "";
+        for (i = 0; i < ticketNatureData.length; i++) {
+            TableData += "<tr><td>" + ticketNatureData[i].Nature + "</td></tr>";
+        }
+        var TableUI = '<table class="table table-bordered"><tbody>' + TableData + '</tbody></table>';
+        var boxHTML = '';
+        swal({
+            title: 'Ticket Nature',
+            html: TableUI,
+            showCloseButton: true,
+            focusConfirm: false,
+            confirmButtonText: '<a href="#" style="color:white;"><i class="fa fa-plus"></i> Add</a>'
+        }).then(function () {
+            AddTicketNature();
+        }, function (dismiss) {
+            // handle reject, dismiss can be  'cancel', 'overlay', 'close', and 'timer'
+        });
+    }
+
+    function AddTicketNature() {
+        swal({
+            title: 'Enter New Ticket Nature',
+            input: 'text',
+            customClass: 'swal-wide',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: function (InputData) {
+                return new Promise(function (resolve, reject) {
+                    setTimeout(function () {
+                        if (InputData == "") {
+                            reject('Enter valid Ticket nature.')
+                        } else {
+                            resolve()
+                        }
+                    }, 2000)
+                })
+            },
+            allowOutsideClick: false
+        }).then(function (InputData) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddTicketNature", "MasterData")',
+                data: { tn: InputData },
+                async: true,
+                success: function (data) {
+                    if (data.status) {
+                        swal({
+                            type: 'success',
+                            title: 'Ticket Nature Added!',
+                            html: 'Submitted new Ticket Nature: ' + InputData
+                        });
+                        LoadTicketNature();
+                    }
+                    else {
+                        swal({
+                            type: 'error',
+                            title: data.response,
+                            timer: 5000
+                        });
+                    }
+                }
+            });
+        }, function () {
+            swal.resetDefaults()
+        })
+    }
+
+    function ShowUserGroup() {
+        var TableData = "";
+        for (i = 0; i < userGroupData.length; i++) {
+            TableData += "<tr><td>" + userGroupData[i].UsrGroup + "</td></tr>";
+        }
+        var TableUI = '<table class="table table-bordered"><tbody>' + TableData + '</tbody></table>';
+        var boxHTML = '';
+        swal({
+            title: 'User Groups',
+            html: TableUI,
+            showCloseButton: true,
+            focusConfirm: false,
+            confirmButtonText: '<a href="#" style="color:white;"><i class="fa fa-plus"></i> Add</a>'
+        }).then(function () {
+            AddUserGroup();
+        }, function (dismiss) {
+            // handle reject, dismiss can be  'cancel', 'overlay', 'close', and 'timer'
+        });
+    }
+
+    function AddUserGroup() {
+        swal({
+            title: 'Enter New User Group',
+            input: 'text',
+            customClass: 'swal-wide',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: function (InputData) {
+                return new Promise(function (resolve, reject) {
+                    setTimeout(function () {
+                        if (InputData == "") {
+                            reject('Enter valid User Group.')
+                        } else {
+                            resolve()
+                        }
+                    }, 2000)
+                })
+            },
+            allowOutsideClick: false
+        }).then(function (InputData) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddUserGroup", "MasterData")',
+                data: { UsrGroup: InputData },
+                async: true,
+                success: function (data) {
+                    if (data.status) {
+                        swal({
+                            type: 'success',
+                            title: 'UserGroup Added!',
+                            html: 'Submitted UserGroup: ' + InputData
+                        });
+                        LoadUserGroupData();
+                    }
+                    else {
+                        swal({
+                            type: 'error',
+                            title: data.response,
+                            timer: 5000
+                        });
+                    }
+                }
+            });
+        }, function () {
+            swal.resetDefaults()
+        })
+    }
+
+    function ShowModule() {
+        var TableData = "";
+        for (i = 0; i < moduleData.length; i++) {
+            TableData += "<tr><td>" + moduleData[i].Module + "</td></tr>";
+        }
+        var TableUI = '<table class="table table-bordered"><tbody>' + TableData + '</tbody></table>';
+        var boxHTML = '';
+        swal({
+            title: 'Modules',
+            html: TableUI,
+            showCloseButton: true,
+            focusConfirm: false,
+            confirmButtonText: '<a href="#" style="color:white;"><i class="fa fa-plus"></i> Add</a>'
+        }).then(function () {
+            AddModule();
+        }, function (dismiss) {
+            // handle reject, dismiss can be  'cancel', 'overlay', 'close', and 'timer'
+        });
+    }
+
+    function AddModule() {
+        swal({
+            title: 'Enter New Module',
+            input: 'text',
+            customClass: 'swal-wide',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: function (InputData) {
+                return new Promise(function (resolve, reject) {
+                    setTimeout(function () {
+                        if (InputData == "") {
+                            reject('Enter valid Module.')
+                        } else {
+                            resolve()
+                        }
+                    }, 2000)
+                })
+            },
+            allowOutsideClick: false
+        }).then(function (InputData) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddModule", "MasterData")',
+                data: { module: InputData },
+                async: true,
+                success: function (data) {
+                    if (data.status) {
+                        swal({
+                            type: 'success',
+                            title: 'Module Added!',
+                            html: 'Submitted Module: ' + InputData
+                        });
+                        LoadModuleData();
+                    }
+                    else {
+                        swal({
+                            type: 'error',
+                            title: data.response,
+                            timer: 5000
+                        });
+                    }
+                }
+            });
+        }, function () {
+            swal.resetDefaults()
+        })
+    }
+
+</script>
+
+
+
