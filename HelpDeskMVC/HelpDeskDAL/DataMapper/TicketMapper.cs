@@ -19,7 +19,9 @@ namespace HelpDeskDAL.DataMapper
                 tkt.TicketModule.ModuleID = Convert.ToInt32(reader["ModuleID"] == DBNull.Value ? 0 : reader["ModuleID"]);
                 tkt.TicketModule.Module = reader["ModuleName"] == DBNull.Value ? "" : reader["ModuleName"].ToString();
                 tkt.Nature.NatureID = Convert.ToInt32(reader["NatureID"] == DBNull.Value ? 0 : reader["NatureID"]);
+
                 tkt.Nature.Nature = Enum.GetName(typeof(Ticket_Nature), tkt.Nature.NatureID);
+
                 var PriorityID = Convert.ToInt32(reader["PriorityID"] == DBNull.Value ? 0 : reader["PriorityID"]);
                 tkt.TicketPriority = Enum.GetName(typeof(Ticket_Priority), PriorityID);
                 tkt.CreatedBy = Convert.ToInt32(reader["CreatedBy"] == DBNull.Value ? 0 : reader["CreatedBy"]);
@@ -28,7 +30,8 @@ namespace HelpDeskDAL.DataMapper
                 tkt.AssignedTo.EmailID = reader["AssignedUserEmail"] == DBNull.Value ? "" : reader["AssignedUserEmail"].ToString();
                 tkt.AssignedTo.Name = reader["AssignedUserName"] == DBNull.Value ? "Not Assigned" : reader["AssignedUserName"].ToString();//
                 tkt.Status.ID = Convert.ToInt32(reader["StatusID"] == DBNull.Value ? 0 : reader["StatusID"]);
-                tkt.Status.Status = Enum.GetName(typeof(Ticket_Status), tkt.Status.ID);
+                //tkt.Status.Status = Enum.GetName(typeof(Ticket_Status), tkt.Status.ID);
+                tkt.Status.Status = reader["TktStatus"] == DBNull.Value ? "" : reader["TktStatus"].ToString();
                 //tkt.ClosureComment= reader["ClosureComment"] == DBNull.Value ? "" : reader["ClosureComment"].ToString();
                 tkt.CreatedByUser.EmailID = reader["CreatedByEmail"] == DBNull.Value ? "" : reader["CreatedByEmail"].ToString();
                 tkt.CreatedByUser.Name = reader["CreatedByName"] == DBNull.Value ? "" : reader["CreatedByName"].ToString();
@@ -46,7 +49,8 @@ namespace HelpDeskDAL.DataMapper
                 TicketCountStatusWise tkt = new TicketCountStatusWise();
                 tkt.StatusID = Convert.ToInt32(reader["StatusID"] == DBNull.Value ? 0 : reader["StatusID"]);
                 tkt.Count = Convert.ToInt32(reader["TktCount"] == DBNull.Value ? 0 : reader["TktCount"]);
-                tkt.StatusDesc = Enum.GetName(typeof(Ticket_Status), tkt.StatusID);
+                //tkt.StatusDesc = Enum.GetName(typeof(Ticket_Status), tkt.StatusID);
+                tkt.StatusDesc = reader["TktStatus"] == DBNull.Value ? "" : reader["TktStatus"].ToString();
                 tkts.Add(tkt);
             }
             return tkts;

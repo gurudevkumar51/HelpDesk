@@ -10,6 +10,7 @@ namespace HelpDeskMVC.Controllers
     public class HomeController : Controller
     {
         private TicketBusiness tktBAL = new TicketBusiness();
+
         [Authorize]
         public ActionResult Index()
         {

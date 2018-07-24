@@ -1,5 +1,5 @@
 ﻿@{     
-    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
+    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SuperUser") ? "SuperUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
     var ActiveController = TempData["ActiveController"].ToString();
     var ActiveAction = TempData["ActiveAction"].ToString();
 }
@@ -11,7 +11,7 @@
         <a href="@Url.Action("Index", "Home")"><i class="fa fa-home"></i><span>Home</span></a>
     </li>
     
-    @if (role == "SupeUser" || role == "EndUser" || role == "HelpdeskUser")
+    @if (role == "SuperUser" || role == "EndUser" || role == "HelpdeskUser")
     {
         <li class="@((ActiveController == "Ticket") && (ActiveAction=="AddTicket" || ActiveAction!="MyActiveTicket" || ActiveAction!= "MyClosedTicket") ? "treeview active" : "treeview")">
             <a href="#">
@@ -71,6 +71,9 @@
                 <a href="@Url.Action("AddUser", "User")"><i class="fa fa-user-plus"></i> Add User</a>
             </li>
         </ul>                            
+    </li>
+    <li class="@((ActiveController == "MasterData") && (ActiveAction=="Index") ? "active" : "")">
+        <a href="@Url.Action("Index", "MasterData")"><i class="fa fa-gears"></i><span>Manage Master Data</span></a>
     </li>
     }
 </ul>

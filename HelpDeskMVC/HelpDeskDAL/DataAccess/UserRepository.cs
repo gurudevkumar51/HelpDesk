@@ -105,24 +105,66 @@ namespace HelpDeskDAL.DataAccess
             return flag;
         }
 
+        public int ResetAllModules(int UID)
+        {
+            var flag = 0;            
+            try
+            {
+                SqlParameter[] parameters = {
+                         new SqlParameter("@Type", "E"),
+                         new SqlParameter("@UserID", UID),
+                        };
+                flag = ExecuteNonQuery("SP_Manage_Modules", parameters);
+            }
+            catch
+            {
+                return flag;
+            }
+            return flag;
+        }
+
         public int UpdateUserProfile(User usr, out string msg)
         {
             var flag = 0;
             msg = "";
-            try
+            if (usr.UID > 0)
             {
-                SqlParameter[] parameters = {
+                try
+                {
+                    SqlParameter[] parameters = {
                          new SqlParameter("@Type", "B"),
                          new SqlParameter("@Email", usr.EmailID),
+                         new SqlParameter("@UserID", usr.UID),
                          new SqlParameter("@PhoneNumber", usr.ContactNo),
                          new SqlParameter("@Name", usr.Name),
                          new SqlParameter("@UserGroupID", usr.UserGroup.GroupID)
                         };
+                    flag = ExecuteNonQuery("SP_Manage_User", parameters);
+                    msg = flag > 0 ? usr.Name+ " Account successfully update" : "Try again";
+                }
+                catch (Exception ex)
+                {
+                    msg = "Unable to update due to " + ex.Message;
+                    return flag;
+                }
+            }else
+            msg = "Invalid UserID";
+            return flag;
+        }
+
+        public int DeleteUser(int UID)
+        {
+            var flag = 0;
+            try
+            {
+                SqlParameter[] parameters = {
+                         new SqlParameter("@Type", "I"),
+                         new SqlParameter("@UserID", UID),
+                        };
                 flag = ExecuteNonQuery("SP_Manage_User", parameters);
             }
-            catch (Exception ex)
+            catch
             {
-                msg = "Unable to update due to " + ex.Message;
                 return flag;
             }
             return flag;

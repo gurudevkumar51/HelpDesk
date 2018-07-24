@@ -16,6 +16,10 @@ namespace HelpDeskBAL.User
         {
             return usrRepo.GetUserList(email);
         }
+        public int DeleteUser(int UID)
+        {
+            return usrRepo.DeleteUser(UID);
+        }
 
         public HelpDeskEntities.Account.User GetUserByUID(int UId)
         {
@@ -33,7 +37,7 @@ namespace HelpDeskBAL.User
             return uList.Where(u => u.Modules.Any(m => m.ModuleID == moduleID) && u.UserGroup.GroupID == 5).ToList();
         }
 
-        // returns All HelpDesk User & Super User on the basis of moduleID
+        //returns All HelpDesk User & Super User on the basis of moduleID
         public List<HelpDeskEntities.Account.User> HelpDeskUserModuleWise(int mdl)
         {
             return usrRepo.HelpDeskUserModuleWise(mdl);
@@ -57,9 +61,22 @@ namespace HelpDeskBAL.User
             return InsertedId;
         }
 
-        public int UpdateUserProfile(HelpDeskEntities.Account.User usr, out string msg)
+        public int UpdateUserProfile(HelpDeskEntities.Account.User usr, List<int> mdls, out string msg)
         {
-            return usrRepo.UpdateUserProfile(usr, out msg);
+            var flag = usrRepo.UpdateUserProfile(usr, out msg);
+            var msg1 = "";
+            if (mdls != null)
+            {
+                if (mdls.Count > 0)
+                {
+                    usrRepo.ResetAllModules(usr.UID);
+                    foreach (var m in mdls)
+                    {
+                        usrRepo.UpdateUserModule(m, usr.UID, out msg1);
+                    }
+                }
+            }
+            return flag;
         }
 
         public HelpDeskEntities.Account.UserProfile UserDetails(int UID)

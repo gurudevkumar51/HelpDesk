@@ -1,4 +1,5 @@
 ﻿using HelpDeskEntities.Mail;
+using HelpDeskEntities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,10 +13,10 @@ namespace HelpDeskCommon.CommonClasses
 {
    public class GenericClass
     {
-        private static string SMTP_HostName = ConfigurationManager.AppSettings["SMTP_HostName"].ToString();
-        private static string SMTP_Port = ConfigurationManager.AppSettings["SMTP_Port"].ToString();
-        private static string SMTP_UserName = ConfigurationManager.AppSettings["SMTP_UserName"].ToString();
-        private static string SMTP_PWD = ConfigurationManager.AppSettings["SMTP_PWD"].ToString();
+        //private static string SMTP_HostName = ConfigurationManager.AppSettings["SMTP_HostName"].ToString();
+        //private static string SMTP_Port = ConfigurationManager.AppSettings["SMTP_Port"].ToString();
+        //private static string SMTP_UserName = ConfigurationManager.AppSettings["SMTP_UserName"].ToString();
+        //private static string SMTP_PWD = ConfigurationManager.AppSettings["SMTP_PWD"].ToString();
         public static string Hash(string value)
         {
             return Convert.ToBase64String(
@@ -76,12 +77,13 @@ namespace HelpDeskCommon.CommonClasses
         {
             try
             {
+                SmtpDetails smtpdtls = new SmtpDetails();
                 msg = "";
                 MailMessage mail = new MailMessage();
                 foreach (string ToMail in mailDetails.Mail_To)
                 {
                     if (!String.IsNullOrEmpty(ToMail))
-                        mail.Bcc.Add(ToMail);
+                        mail.To.Add(ToMail);
                 }
                 foreach (string bccMail in mailDetails.Mail_bcc)
                 {
@@ -91,11 +93,11 @@ namespace HelpDeskCommon.CommonClasses
                 foreach (string ccMail in mailDetails.Mail_Cc)
                 {
                     if (!String.IsNullOrEmpty(ccMail))
-                        mail.Bcc.Add(ccMail);
+                        mail.CC.Add(ccMail);
                 }
                 
-                if (!String.IsNullOrEmpty(Convert.ToString(SMTP_UserName)))
-                    mail.From = new MailAddress(SMTP_UserName);
+                if (!String.IsNullOrEmpty(Convert.ToString(smtpdtls.Smtp_mailfrom)))
+                    mail.From = new MailAddress(smtpdtls.Smtp_mailfrom);
 
                 mail.Subject = mailDetails.Mail_Subject;
                 string Body = mailDetails.Mail_Content;
@@ -103,10 +105,10 @@ namespace HelpDeskCommon.CommonClasses
                 mail.IsBodyHtml = true;
 
                 SmtpClient smtp = new SmtpClient();
-                smtp.Host = SMTP_HostName;
-                smtp.Port = Convert.ToInt32(SMTP_Port);
-                smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new System.Net.NetworkCredential(SMTP_UserName, SMTP_PWD);
+                smtp.Host = smtpdtls.Smtp_Host;
+                smtp.Port = smtpdtls.Smtp_Port;                
+                smtp.UseDefaultCredentials = true;
+                smtp.Credentials = new System.Net.NetworkCredential(smtpdtls.Smtp_username, smtpdtls.Smtp_password);
                 smtp.EnableSsl = true;
                 //smtp.SendAsync(mail, null);//.Send(mail);
                 smtp.Send(mail);
@@ -114,6 +116,54 @@ namespace HelpDeskCommon.CommonClasses
                 return true;
             }
             catch (SmtpException ex)
+            {
+                msg = ex.Message;
+                return false;
+            }
+        }
+
+        public static string GenerateOTP()
+        {
+            Random rnd = new Random();
+            int otp = rnd.Next(100000, 999999);
+            return otp.ToString();
+        }
+
+        public static Boolean VerifyOTP(object sessionOtp, string otp, out string msg)
+        {
+            msg = string.Empty;
+            try
+            {
+                if (sessionOtp != null)
+                {
+                    OTP otpObj = (OTP)sessionOtp;
+                    var currentDt = DateTime.Now;
+                    if (currentDt < otpObj.ExpireDateTime && currentDt > otpObj.CreateDateTime)
+                    {
+                        if (otpObj.OTPvalue == otp)
+                        {
+                            msg = "Successfully verified";
+                            return true;
+                        }
+                        else
+                        {
+                            msg = "You have entered wrong OTP";
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        msg = "Your OTP is expired Resend OTP";
+                        return false;
+                    }
+                }
+                else
+                {
+                    msg = "OTP is expired generate again";
+                    return false;
+                }
+            }
+            catch (Exception ex)
             {
                 msg = ex.Message;
                 return false;

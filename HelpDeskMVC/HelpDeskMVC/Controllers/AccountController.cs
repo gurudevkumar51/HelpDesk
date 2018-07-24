@@ -1,9 +1,12 @@
 ﻿using HelpDeskBAL.Account;
+using HelpDeskBAL.User;
 using HelpDeskCommon.CommonClasses;
+using HelpDeskEntities;
 using HelpDeskEntities.Account;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -13,6 +16,7 @@ namespace HelpDeskMVC.Controllers
     public class AccountController : Controller
     {
         private AccountBusiness AccBAL = new AccountBusiness();
+        private UserBusiness uBAL = new UserBusiness();
 
         [AllowAnonymous]
         [HttpGet]
@@ -29,7 +33,8 @@ namespace HelpDeskMVC.Controllers
             }
         }
 
-        [HttpPost][AllowAnonymous]
+        [HttpPost]
+        [AllowAnonymous]
         public ActionResult login(Login lgn, string returnUrl)
         {
             string message = "";
@@ -38,7 +43,7 @@ namespace HelpDeskMVC.Controllers
             {
                 var authTicket = new FormsAuthenticationTicket(
                     1,
-                    user.EmailID + "," + user.Name + "," + user.UID+","+user.MemberSince,
+                    user.EmailID + "," + user.Name + "," + user.UID + "," + user.MemberSince,
                     DateTime.Now,
                     DateTime.Now.AddMinutes(20),
                     false,
@@ -59,7 +64,7 @@ namespace HelpDeskMVC.Controllers
             }
             else
             {
-                ViewBag.Message = message;
+                TempData["errMsg"] = message;
             }
             return View();
         }
@@ -78,7 +83,7 @@ namespace HelpDeskMVC.Controllers
             //return PartialView();
             return View();
         }
-        
+
         [Authorize]
         [HttpPost]
         public ActionResult ChangePassword(ChangePassword Cp)
@@ -97,9 +102,64 @@ namespace HelpDeskMVC.Controllers
             return View();
         }
 
-        public ActionResult ForgetPassword(string eml)
+        [HttpPost]
+        public ActionResult SendResetPasswordMail(string email)
         {
-            return Json(new { status = true }, JsonRequestBehavior.AllowGet);
+            if (string.IsNullOrEmpty(email))
+            {
+                return Json(new { status = false }, JsonRequestBehavior.AllowGet);
+            }
+
+            Session["otp"] = null;
+            OTP otp = new OTP();
+            string msg = string.Empty;
+            var flag = AccBAL.sendResetPasswordMail(email, out msg, out otp);
+            if (flag)
+            {
+                Session["otp"] = otp;
+            }            
+            return Json(new { status = flag, message = msg }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult ResetPassword(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "User Id not passed in request");
+            }
+            var u = uBAL.GetUserByUID(Convert.ToInt32(id));
+            HelpDeskEntities.Account.ResetPassword cp = new HelpDeskEntities.Account.ResetPassword() { UserEmail = u.EmailID };
+            return View(cp);
+        }
+
+        [HttpPost]
+        public ActionResult ResetPassword(HelpDeskEntities.Account.ResetPassword cp)
+        {
+            var msg = "";
+
+            if(GenericClass.VerifyOTP(Session["otp"], cp.otp, out msg))
+            {
+                var flag = AccBAL.ResetPassword(cp, out msg);
+                if (flag)
+                {
+                    Session["otp"] = null;
+                    TempData["succMsg"] = msg;
+                    return RedirectToAction("login");
+                }
+                else
+                {
+                    TempData["errMsg"] = msg;
+                    cp.otp = "";
+                    return View(cp);
+                }
+            }
+            else
+            {
+                cp.otp = "";
+                TempData["errMsg"] = msg;
+                return View(cp);
+            }                        
         }
     }
 }

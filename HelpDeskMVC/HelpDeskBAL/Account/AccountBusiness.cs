@@ -1,9 +1,12 @@
 ﻿using HelpDeskBAL.User;
 using HelpDeskCommon.CommonClasses;
 using HelpDeskDAL.DataAccess;
+using HelpDeskEntities;
 using HelpDeskEntities.Account;
+using HelpDeskEntities.Mail;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,7 +69,7 @@ namespace HelpDeskBAL.Account
 
             if (string.Compare(GenericClass.Hash(chp.Password), v.Password) == 0)
             {
-                flag = accRepo.ChangePassword(chp, out msg) > 0 ? true : false;
+                flag = accRepo.UpdateNewPassword(chp, out msg) > 0 ? true : false;
                 msg = flag ? "Successfully changed the password" : msg;
             }
             else
@@ -78,6 +81,45 @@ namespace HelpDeskBAL.Account
             return flag;
         }
 
-        
+        public Boolean ResetPassword(ResetPassword rp, out string msg)
+        {
+            ChangePassword chp = new HelpDeskEntities.Account.ChangePassword()
+            { UserEmail = rp.UserEmail, NewPassword = rp.NewPassword };
+
+            var flag = accRepo.UpdateNewPassword(chp, out msg) > 0 ? true : false;
+            msg = flag ? "Successfully updated new password" : msg;
+            return flag;
+        }
+
+        public Boolean sendResetPasswordMail(string mail, out string msg,out OTP otp)
+        {
+            var usr = usrRepo.GetUserList(mail).FirstOrDefault();
+            string subject = "";
+            EmailTemplate et = new EmailTemplate();
+            et.Mail_Content = MailContent(usr, out subject,out otp);
+            //et.Mail_bcc.Add("gurudevkumar51@hotmail.com");
+            et.Mail_To.Add(mail);
+            et.Mail_Subject = subject;
+            var flag = GenericClass.sendMail(et, out msg);
+            return flag;
+        }
+
+        private string MailContent(HelpDeskEntities.Account.User usr, out string subject, out OTP otp)
+        {
+            string resetURL = ConfigurationManager.AppSettings["ResetPasswordURL"].ToString() + usr.UID;
+            string loginURL = ConfigurationManager.AppSettings["LoginURL"].ToString();
+            otp = new OTP(DateTime.Now) { OTPvalue = GenericClass.GenerateOTP() };
+            subject = "Help Desk Reset Password";
+            string Content = "<span>Hi " + usr.Name + ",<span>" +
+                "<br /><p> You have requested for reset password.</p>"+
+                "<p>Your <b>one time password</b> to reset your password is <h1 style='color: blue;'>" + otp.OTPvalue + "</h1>"+
+                "<br/><small>This OTP is only valid for next 4 minutes</small>"+
+                "</p>"+
+                "<p>Please click on the below link to reset your password.</p>" +
+                "<a href=" + resetURL + ">Reset Password<a/>" +
+                "<br/><br/><h4>NOTE: If you have not requested for reset password ,somebody else might have  requested from your mail.</h4>" +
+                "<h4> Please <a href =" + loginURL + "> Login </a> & change your password.</h4>";
+            return Content;
+        }
     }
-}
+} 

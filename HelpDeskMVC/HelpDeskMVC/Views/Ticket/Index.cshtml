@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Index";
-    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
+    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SuperUser") ? "SuperUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
 }
 
 <div class="box box-primary">
@@ -12,7 +12,7 @@
     <!-- /.box-header -->
     <!-- form start -->
     <div class="box-body">
-        <table id="TktTbl" class="table table-responsive">
+        <table id="TktTbl" class="table table-responsive display nowrap">
             <thead>
                 <tr>
                     <th>
@@ -61,10 +61,7 @@
                             @{
                                 if ((item.Status.ID != 3 && item.Status.ID != 4) && (role == "HelpdeskUser"))
                                 {
-                                    @*<a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = item.TicketModule.ModuleID, tktID = item.TicketID })" href="#" class="btn btn-sm btn-success">*@
-                                    <a class="btn btn-sm btn-success" href="#" onclick="AssignTicket(@item.TicketID, @item.TicketModule.ModuleID)">
-                                    @*<a data-fancybox data-type="ajax" data-src="@Url.Action("TicketAssign", "Ticket", new { id = item.TicketModule.ModuleID, tktID = item.TicketID })" href="#" class="btn btn-sm btn-success">*@
-                                        
+                                    <a class="btn btn-sm btn-success" href="#" onclick="AssignTicket(@item.TicketID, @item.TicketModule.ModuleID)">                                     
                                         @if (item.AssignedTo.UID == 0)
                                         {
                                             <i class="fa fa-gears"></i> <b>Assign</b>
@@ -93,9 +90,32 @@
 
 <script>
     $(document).ready(function () {
-        $('#TktTbl').DataTable({
-            responsive: true
+        var table = $('#TktTbl').DataTable({
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+   {
+       extend: 'excel',
+       text: 'Export to excel',
+       className: 'btn btn-default btn-sm',
+       exportOptions: {
+           columns: 'th:not(:last-child)'
+       }
+   }]
+            //buttons: [
+            //    {
+            //        extend: 'collection',
+            //        text: 'Export',
+            //        className: 'btn btn-info btn-sm',
+            //        buttons: [
+            //            'excel',
+            //            'csv'
+            //        ]
+            //    }
+            //]
         });
+        table.buttons().appendTo('.btn .btn-success')//.container()
+        //.appendTo('#example_wrapper .col-sm-6:eq(0)');
     });
 
     function AssignTicket(tktID, moduleID) {

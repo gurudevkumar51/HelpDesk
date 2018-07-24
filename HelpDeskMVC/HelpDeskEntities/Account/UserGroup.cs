@@ -14,5 +14,7 @@ namespace HelpDeskEntities.Account
         [Required(ErrorMessage ="User Group is required")]
         [Display(Name ="User Group")]
         public string UsrGroup { get; set; }
+        public Boolean Status { get; set; }
+        public string DeActivatedDate { get; set; }
     }
 }

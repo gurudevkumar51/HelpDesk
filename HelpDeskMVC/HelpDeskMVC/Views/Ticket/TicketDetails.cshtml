@@ -3,7 +3,7 @@
 
 @{
     ViewBag.Title = "TicketDetails";
-    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
+    var role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SuperUser") ? "SuperUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
     var CurrentUser = Convert.ToInt32(GenericClass.CsvToStringArray(User.Identity.Name)[2]);
 }
 
@@ -60,7 +60,7 @@
                                     }
                                     else
                                     {
-                                        <a class="btn btn-sm btn-success" href="#" onclick="AssignTicket(@Model.TicketID, @Model.TicketModule.ModuleID)">
+                                        <a class="btn btn-sm btn-success" href="#" onclick="EsclateTicket(@Model.TicketID, @Model.TicketModule.ModuleID)">
                                             <i class="fa fa-gears"> Esclate</i>
                                         </a>
                                         @*<a data-fancybox data-type="ajax" data-src="@Url.Action("EsclateTicket", "Ticket", new { id = Model.TicketModule.ModuleID, tktID = Model.TicketID })" href="#" class="btn btn-sm btn-success">
@@ -79,7 +79,7 @@
                                         <i class="fa fa-gears"> Resolve</i>
                                     </a>*@
                                 }
-                                if ((role == "EndUser" || role == "SupeUser") && (Model.Status.ID == 4 && Model.CreatedBy == CurrentUser))
+                                if ((role == "EndUser" || role == "SuperUser") && (Model.Status.ID == 4 && Model.CreatedBy == CurrentUser))
                                 {
                                     <a href="#" onclick="ReopenTicket(@Model.TicketID)" class="btn btn-sm bg-maroon"> Reopen</a>
                                 }
@@ -91,7 +91,7 @@
                     <div class="col-lg-3">
                         <label>Status:</label>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-3" id="tktStatus">
                         @Model.Status.Status
                     </div>
                     <div class="col-lg-3">
@@ -286,9 +286,9 @@
             success: function (data) {
                 window.location = '@Url.Action("DownloadFile", "Ticket")?filename=' + FileName+'&OriginalFileName='+FileDisplayName;
             },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
                 swal("","File not available on server","error");
-            } 
+            }
         });
     }
 
@@ -307,6 +307,17 @@
         $.ajax({
             type: "GET",
             url: '@Url.Action("TicketAssign", "Ticket")?id=' + moduleID + '&tktID=' + tktID,
+            async: true,
+            success: function (data) {
+                $.fancybox(data);
+            }
+        });
+    }
+
+    function EsclateTicket(tktID, moduleID) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("EsclateTicket", "Ticket")?id=' + moduleID + '&tktID=' + tktID,
             async: true,
             success: function (data) {
                 $.fancybox(data);
@@ -354,7 +365,32 @@
     }
 
     function ReopenTicket(id){
-        swal("Reopened "+id);
+        swal({
+            title: 'Are you sure?',
+            text: "You want to Reopen this ticket!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Reopen it!'
+        }).then((result) => {
+            console.log(result);
+            if (result) {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("ReOpen", "Ticket")?tktID=' + id,
+                    async: true,
+                    success: function (data) {
+                        if(data.status){
+                            swal("Reopened",data.response,"success");
+                            $("#tktStatus").text("Reopen");
+                        }else{
+                            swal("Sorry",data.response,"error");
+                        }
+                    }
+                });
+            }
+        })        
     }
 
     function postComment() {

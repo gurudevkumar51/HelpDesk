@@ -24,7 +24,8 @@ namespace HelpDeskDAL.DataMapper
                 acc.Password = reader["UserPassword"] == DBNull.Value ? "" : reader["UserPassword"].ToString();
                 acc.last_Login = reader["LastLogin"] == DBNull.Value ? DateTime.Now : Convert.ToDateTime(reader["LastLogin"]);
                 acc.UserGroup.GroupID = Convert.ToInt32(reader["UserGroupID"] == DBNull.Value ? 0 : reader["UserGroupID"]);
-                acc.UserGroup.UsrGroup = Enum.GetName(typeof(User_Group), acc.UserGroup.GroupID);
+                //acc.UserGroup.UsrGroup = Enum.GetName(typeof(User_Group), acc.UserGroup.GroupID);
+                acc.UserGroup.UsrGroup = reader["User_Group"] == DBNull.Value ? "" : reader["User_Group"].ToString();
                 acc.Modules = mrepo.ModuleListForUser(acc.UID);
                 acc.Status = Convert.ToBoolean(reader["IsActive"] == DBNull.Value ? 0 : reader["IsActive"]);
                 accs.Add(acc);
@@ -47,7 +48,8 @@ namespace HelpDeskDAL.DataMapper
                 acc.last_Login = reader["LastLogin"] == DBNull.Value ? "" : Convert.ToDateTime(reader["LastLogin"]).ToString("dd MMM, yyyy");
                 acc.UserGroup.GroupID = Convert.ToInt32(reader["UserGroupID"] == DBNull.Value ? 0 : reader["UserGroupID"]);
                 acc.TicketAssigned = Convert.ToInt32(reader["TicketAssigned"] == DBNull.Value ? 0 : reader["TicketAssigned"]);
-                acc.UserGroup.UsrGroup = Enum.GetName(typeof(User_Group), acc.UserGroup.GroupID);
+                //acc.UserGroup.UsrGroup = Enum.GetName(typeof(User_Group), acc.UserGroup.GroupID);
+                acc.UserGroup.UsrGroup = reader["User_Group"] == DBNull.Value ? "" : reader["User_Group"].ToString();
                 acc.Modules = mrepo.ModuleListForUser(acc.UID);
                 acc.Status = Convert.ToBoolean(reader["IsActive"] == DBNull.Value ? 0 : reader["IsActive"]);
                 accs.Add(acc);

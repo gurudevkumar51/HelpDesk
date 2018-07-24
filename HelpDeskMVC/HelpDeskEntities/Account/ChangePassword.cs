@@ -8,9 +8,7 @@ using System.Threading.Tasks;
 namespace HelpDeskEntities.Account
 {
     public class ChangePassword//:User
-    {
-        
-
+    {       
         public string UserEmail { get; set; }
 
         [Display(Name = "Old Password")]

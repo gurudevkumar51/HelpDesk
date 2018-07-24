@@ -36,6 +36,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -72,6 +73,7 @@
   <ItemGroup>
     <Compile Include="Account\ChangePassword.cs" />
     <Compile Include="Account\Login.cs" />
+    <Compile Include="Account\ResetPassword.cs" />
     <Compile Include="Account\User.cs" />
     <Compile Include="Account\UserGroup.cs" />
     <Compile Include="Account\UserProfile.cs" />
@@ -79,6 +81,7 @@
     <Compile Include="Mail\EmailTemplate.cs" />
     <Compile Include="Mail\SmtpDetails.cs" />
     <Compile Include="Modules\Modules.cs" />
+    <Compile Include="OTP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ticket\Ticket.cs" />
     <Compile Include="Ticket\TicketComment.cs" />

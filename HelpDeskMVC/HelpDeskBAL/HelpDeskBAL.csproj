@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -45,7 +46,9 @@
     <Compile Include="Module\ModuleBAL.cs" />
     <Compile Include="Ticket\CommentBAL.cs" />
     <Compile Include="Ticket\TicketBusiness.cs" />
+    <Compile Include="Ticket\TicketNatureBusiness.cs" />
     <Compile Include="User\UserBusiness.cs" />
+    <Compile Include="User\UserGroupBusiness.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HelpDeskCommon\HelpDeskCommon.csproj">

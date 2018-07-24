@@ -21,7 +21,8 @@ namespace HelpDeskMVC.Controllers
         private ModuleBAL mdlb = new ModuleBAL();
 
         #region Ticket Listing Action Methods
-        [Authorize(Roles = "admin, SupeUser, HelpdeskUser")]
+        [Authorize(Roles = "admin, SuperUser, HelpdeskUser, SupportStaff")]
+        //[Authorize]
         //It gives all Active Tickets
         public ActionResult Index()
         {
@@ -29,21 +30,21 @@ namespace HelpDeskMVC.Controllers
             return View(Tkt.AllActiceTickets());
         }
 
-        [Authorize(Roles = "admin, SupeUser, HelpdeskUser")]
+        [Authorize(Roles = "admin, SuperUser, HelpdeskUser,SupportStaff")]
         public ActionResult ClosedTickets()
         {
             TempData["Title"] = "Closed Tickets";
             return View("Index", Tkt.AllClosedTickets());
         }
 
-        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
+        [Authorize(Roles = "SuperUser, EndUser, HelpdeskUser")]
         public ActionResult MyActiveTicket()
         {
             TempData["Title"] = "My Active Tickets";
             return View("Index", Tkt.MyActiveTickets());
         }
 
-        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
+        [Authorize(Roles = "SuperUser, EndUser, HelpdeskUser")]
         public ActionResult MyClosedTicket()
         {
             TempData["Title"] = "My Closed Tickets";
@@ -61,7 +62,7 @@ namespace HelpDeskMVC.Controllers
 
         #region Ticket Transactions Methods
 
-        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
+        [Authorize(Roles = "SuperUser, EndUser, HelpdeskUser")]
         [HttpGet]
         public ActionResult AddTicket()
         {
@@ -70,7 +71,7 @@ namespace HelpDeskMVC.Controllers
             return View(m);
         }
 
-        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
+        [Authorize(Roles = "SuperUser, EndUser, HelpdeskUser")]
         [HttpPost]
         public ActionResult AddTicket(Ticket tkt)
         {
@@ -82,7 +83,7 @@ namespace HelpDeskMVC.Controllers
             return View(m);
         }
 
-        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
+        [Authorize(Roles = "SuperUser, EndUser, HelpdeskUser")]
         [HttpGet]
         public ActionResult EditTicket(int id)
         {
@@ -92,7 +93,7 @@ namespace HelpDeskMVC.Controllers
             return View(m.MyTickets.Where(t => t.TicketID == id).FirstOrDefault());
         }
 
-        [Authorize(Roles = "SupeUser, EndUser, HelpdeskUser")]
+        [Authorize(Roles = "SuperUser, EndUser, HelpdeskUser")]
         [HttpPost]
         public ActionResult EditTicket(Ticket tkt)
         {
@@ -103,7 +104,7 @@ namespace HelpDeskMVC.Controllers
             return RedirectToAction("AddTicket", m);
         }
 
-        [Authorize(Roles = "SupeUser,SupportStaff,HelpdeskUser")]
+        [Authorize(Roles = "SuperUser,SupportStaff,HelpdeskUser")]
         [HttpGet]
         public ActionResult ResolveTicket(int tktID)
         {
@@ -112,7 +113,7 @@ namespace HelpDeskMVC.Controllers
             return PartialView(resolve);
         }
 
-        [Authorize(Roles = "SupeUser,SupportStaff,HelpdeskUser")]
+        [Authorize(Roles = "SuperUser,SupportStaff,HelpdeskUser")]
         [HttpPost]
         public ActionResult ResolveTicket(ResolveTicketViewModel resolve)
         {
@@ -124,11 +125,15 @@ namespace HelpDeskMVC.Controllers
             return View("TicketDetails", Tkt.TicketByTktID(resolve.TicketID));
         }
 
+        [Authorize]
+        [HttpGet]
         public ActionResult ReOpen(int TktID)
         {            
             TempData["Title"] = "Ticket Details";
-            TempData["msg"] = Tkt.ReopenTicket(TktID) ? "Ticket Reopened Succesfully" : "Unable to Reopen Ticket";
-            return View("TicketDetails", Tkt.TicketByTktID(TktID));
+            var flag = Tkt.ReopenTicket(TktID);
+            var msg = TempData["msg"] = flag ? "Ticket Reopened Succesfully" : "Unable to Reopen Ticket";
+            return Json(new { status = flag, response = msg }, JsonRequestBehavior.AllowGet);
+            //return View("TicketDetails", Tkt.TicketByTktID(TktID));
         }
 
         [Authorize(Roles = "HelpdeskUser")]
@@ -177,7 +182,7 @@ namespace HelpDeskMVC.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "SupeUser, EndUser, admin")]
+        [Authorize(Roles = "SuperUser, EndUser, admin")]
         public ActionResult CloseTicket(int tktID)
         {
             var flag = Tkt.CloseTicket(tktID);

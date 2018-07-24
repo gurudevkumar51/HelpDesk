@@ -25,7 +25,7 @@ namespace HelpDeskDAL.DataAccess
             return flag;
         }
 
-        public int ChangePassword(ChangePassword chpwd, out string msg)
+        public int UpdateNewPassword(ChangePassword chpwd, out string msg)
         {
             msg = "";
             var flag = 0;

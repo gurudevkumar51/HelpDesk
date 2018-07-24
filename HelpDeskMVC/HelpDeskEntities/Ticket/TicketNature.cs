@@ -13,5 +13,6 @@ namespace HelpDeskEntities.Ticket
         public int NatureID { get; set; }
         
         public string Nature { get; set; }
+        public Boolean Status { get; set; }
     }
 }

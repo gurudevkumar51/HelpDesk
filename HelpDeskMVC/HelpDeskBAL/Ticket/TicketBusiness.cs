@@ -19,7 +19,7 @@ namespace HelpDeskBAL.Ticket
         private TicketRepository tktRepo = new TicketRepository();
         private LogsRepository LogRepo = new LogsRepository();
         private List<HelpDeskEntities.Modules.Modules> UserModuleList = new List<HelpDeskEntities.Modules.Modules>();
-        private string role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SupeUser") ? "SupeUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
+        private string role = HttpContext.Current.User.IsInRole("admin") ? "admin" : (HttpContext.Current.User.IsInRole("HelpdeskUser") ? "HelpdeskUser" : (HttpContext.Current.User.IsInRole("SuperUser") ? "SuperUser" : (HttpContext.Current.User.IsInRole("SupportStaff") ? "SupportStaff" : "EndUser")));
         private string[] CurrentUser = GenericClass.CsvToStringArray(HttpContext.Current.User.Identity.Name);
 
         private List<HelpDeskEntities.Ticket.Ticket> AllTicket()
@@ -35,7 +35,7 @@ namespace HelpDeskBAL.Ticket
                 {
                     return TktData;
                 }
-                else if (role == "HelpdeskUser" || role == "SupeUser")
+                else if (role == "HelpdeskUser" || role == "SuperUser")
                 {
                     ModuleBAL mb = new ModuleBAL();
                     UserModuleList = mb.ModuleListForUser(Convert.ToInt32(CurrentUser[2]));
@@ -96,7 +96,7 @@ namespace HelpDeskBAL.Ticket
             if (data && priorityID != 0)
             {
                 var prio = Enum.GetName(typeof(Ticket_Priority), priorityID);
-                LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Set Priority as " + prio, ticketID, out msg2);
+                LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Set Priority as " + prio+" by "+CurrentUser[1] + " (" + role + ")", ticketID, out msg2);
                 msg = msg + " And " + msg2;
             }
             return data;
@@ -108,7 +108,7 @@ namespace HelpDeskBAL.Ticket
             User.UserBusiness u = new User.UserBusiness();
             var asigneeUser = u.GetUserByUID(AssignedTo);
 
-            var otpt = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Assigned to " + asigneeUser.Name, TktID, out msg);
+            var otpt = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), CurrentUser[1] + " (" + role + ") Assigned to " + asigneeUser.Name, TktID, out msg);
             var flag = otpt > 0 ? true : false;
             if (flag)
             {
@@ -134,7 +134,7 @@ namespace HelpDeskBAL.Ticket
             User.UserBusiness u = new User.UserBusiness();
             var asigneeUser = u.GetUserByUID(AssignedTo);
 
-            var otpt = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Esclated to " + u.GetUserByUID(AssignedTo).Name, TktID, out msg);
+            var otpt = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), CurrentUser[1] + " (" + role + ") Esclated to " + u.GetUserByUID(AssignedTo).Name, TktID, out msg);
             var flag = otpt > 0 ? true : false;
             if (flag)
             {
@@ -169,7 +169,7 @@ namespace HelpDeskBAL.Ticket
                 //string mailMsg = "";
                 //GenericClass.sendMail(mailTemp, out mailMsg);
 
-                var log = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Closed by " + CurrentUser[1], tktID, out msg);
+                var log = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Closed by " + CurrentUser[1] + " (" + role + ")", tktID, out msg);
                 if (log > 0)
                 {
                     return true;
@@ -194,7 +194,7 @@ namespace HelpDeskBAL.Ticket
                 //string mailMsg = "";
                 //GenericClass.sendMail(mailTemp, out mailMsg);
 
-                string ResolveComment = "Resolved by " + CurrentUser[1] + "<br />" + comment;
+                string ResolveComment = "Resolved by " + CurrentUser[1] + " (" + role + ")" + "<br />" + comment;
                 var log = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), ResolveComment, tktID, out msg);
                 if (log > 0)
                 {
@@ -218,7 +218,7 @@ namespace HelpDeskBAL.Ticket
         public Boolean ReopenTicket(int tktID)
         {
             string msg = "";
-            var st = tktRepo.UpdateTicketStatus(tktID, 1);//1 Status id means Open
+            var st = tktRepo.UpdateTicketStatus(tktID, 5);//1 Status id means Open
             if (st > 0)
             {
                 EmailTemplate mailTemp = new EmailTemplate();
@@ -231,7 +231,7 @@ namespace HelpDeskBAL.Ticket
                 //string mailMsg = "";
                 //GenericClass.sendMail(mailTemp, out mailMsg);
 
-                var log = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Reopened by " + CurrentUser[1], tktID, out msg);
+                var log = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Reopened by " + CurrentUser[1] + " (" + role + ")", tktID, out msg);
                 if (log > 0)
                 {
                     return true;
@@ -244,7 +244,7 @@ namespace HelpDeskBAL.Ticket
         public int AddNewTicket(HelpDeskEntities.Ticket.Ticket tkt, out string msg)
         {
             tkt.CreatedBy = Convert.ToInt32(CurrentUser[2]);
-            tkt.Status.ID = (int)Enum.Parse(typeof(Ticket_Status), "Open");
+            tkt.Status.ID = 1;
 
             var InsertedId = tktRepo.AddNewTicket(tkt, out msg);
 
@@ -260,7 +260,7 @@ namespace HelpDeskBAL.Ticket
                 //string mailMsg = "";
                 //GenericClass.sendMail(mailTemp, out mailMsg);
 
-                var tktlogID = LogRepo.AddTicketLog(tkt.CreatedBy, msg, InsertedId, out msg);
+                var tktlogID = LogRepo.AddTicketLog(tkt.CreatedBy, msg+" by "+CurrentUser[1] + " (" + role + ")", InsertedId, out msg);
 
                 if (tkt.files.Count() > 0 && tktlogID > 0)
                 {
@@ -280,7 +280,7 @@ namespace HelpDeskBAL.Ticket
             var flag = tktRepo.UpdateTicket(tkt, out msg) > 0 ? true : false;
             if (flag)
             {
-                var otpt = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Ticket updated", tkt.TicketID, out msg);
+                var otpt = LogRepo.AddTicketLog(Convert.ToInt32(CurrentUser[2]), "Ticket updated by "+CurrentUser[1] + " (" + role + ")", tkt.TicketID, out msg);
             }
             return flag;
         }

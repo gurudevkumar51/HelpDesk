@@ -13,7 +13,7 @@ namespace HelpDeskDAL.DataAccess
     public class ModulesRepository : BaseRepository
     {
         public List<Modules> AllModuleList()
-        {            
+        {
             try
             {
                 ModuleMapper objModuleMapper = new ModuleMapper();
@@ -57,17 +57,17 @@ namespace HelpDeskDAL.DataAccess
             }
         }
 
-        public int AddNewModule(Modules mdl,out string msg)
+        public int AddNewModule(Modules mdl, out string msg)
         {
             var flag = 0; msg = "";
             try
             {
                 SqlParameter[] parameters =
                 {
-                    new SqlParameter("",mdl.Module),
-                    new SqlParameter("","A")
+                    new SqlParameter("@ModuleName",mdl.Module),
+                    new SqlParameter("@Type","A")
                 };
-                flag = ExecuteNonQuery("", parameters);
+                flag = ExecuteNonQuery("SP_Manage_Modules", parameters);
             }
             catch (Exception ex)
             {
